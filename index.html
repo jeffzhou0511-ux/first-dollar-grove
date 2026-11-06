@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First-Dollar Grove — Mint &amp; Mine $FDG</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<script src="./config.js"></script>
+<style>
+  :root { --bg:#0f0f14; --card:#1a1a22; --ink:#f2f2f5; --mut:#9a9aad; --acc:#7dd87d; --gold:#ffd34d; --ok:#4ade80; --bad:#f87171; --blue:#7db8ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:ui-monospace,Menlo,Consolas,monospace; }
+  .wrap { max-width:680px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; margin:8px 0 4px; }
+  h2 { font-size:18px; margin:0 0 10px; }
+  .sub { color:var(--mut); font-size:14px; line-height:1.6; }
+  .card { background:var(--card); border:1px solid #2c2c38; border-radius:14px; padding:18px; margin-top:18px; }
+  .row { display:flex; justify-content:space-between; gap:12px; padding:6px 0; font-size:14px; }
+  .row b { font-weight:600; }
+  .mut { color:var(--mut); }
+  .small { font-size:12px; color:var(--mut); line-height:1.7; }
+  .bar { height:10px; background:#2c2c38; border-radius:6px; overflow:hidden; margin:8px 0 4px; }
+  .bar > div { height:100%; background:var(--acc); width:0%; }
+  .qty { display:flex; gap:10px; align-items:center; margin:12px 0; }
+  .qty button { width:40px; height:40px; font-size:20px; background:#2c2c38; color:var(--ink); border:1px solid #444; border-radius:10px; cursor:pointer; }
+  .qty span { font-size:20px; min-width:28px; text-align:center; }
+  .btn { display:block; width:100%; padding:14px; font-size:16px; font-weight:700; border:0; border-radius:12px; cursor:pointer; background:var(--acc); color:#111; margin-top:10px; }
+  .btn:disabled { background:#3a3a48; color:#888; cursor:not-allowed; }
+  .btn.ghost { background:transparent; color:var(--ink); border:1px solid #444; }
+  .btn.gold { background:var(--gold); }
+  .btn.blue { background:var(--blue); color:#111; }
+  .btn.danger { background:transparent; color:var(--bad); border:1px solid #7a1f1f; }
+  .btnrow { display:flex; gap:10px; }
+  .btnrow .btn { flex:1; }
+  #status { font-size:13px; line-height:1.6; margin-top:12px; min-height:20px; white-space:pre-wrap; word-break:break-all; }
+  #status.ok { color:var(--ok); } #status.err { color:var(--bad); }
+  .banner { background:#3a2b00; border:1px solid #7a5c00; color:var(--gold); border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.6; margin-top:18px; }
+  .banner.red { background:#3a1010; border-color:#7a1f1f; color:#fca5a5; }
+  .banner.green { background:#0f2b16; border-color:#1f7a37; color:#86efac; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:12px; }
+  .nft { border:1px solid #2c2c38; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.7; cursor:pointer; background:#14141c; }
+  .nft.sel { border-color:var(--acc); background:#12281a; }
+  .nft.staked { border-color:var(--blue); }
+  .nft b { font-size:15px; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; background:#2c2c38; color:var(--ink); }
+  .pill.sr { background:#7a5c00; color:#ffd34d; } .pill.ssr { background:#5b21b6; color:#ddd6fe; } .pill.r { background:#14532d; color:#86efac; }
+  input[type=text], select { width:100%; padding:10px; background:#14141c; border:1px solid #444; border-radius:10px; color:var(--ink); font-size:14px; margin-top:6px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+  td, th { padding:6px 4px; border-bottom:1px solid #2c2c38; text-align:left; }
+  tr.cur td { color:var(--acc); font-weight:700; }
+  a { color:var(--acc); }
+  .foot { margin-top:28px; font-size:12px; color:#666; line-height:1.7; word-break:break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🌳 First-Dollar Grove</h1>
+  <div class="sub">Mint trees · merge them into Yggdrasil · mine <b>$FDG</b> for 45 days. Agent ID-gated, on BNB Smart Chain.</div>
+
+  <div class="banner" id="netBanner">TESTNET — this page points at BSC Testnet (chain 97). Mainnet is a one-edit swap in <b>config.js</b>.</div>
+
+  <!-- 1. CONNECT -->
+  <div class="card">
+    <h2>1 · Connect wallet</h2>
+    <button class="btn" id="connectBtn">Connect MetaMask</button>
+    <div id="walletBox" style="display:none">
+      <div class="row"><span class="mut">Address</span><b id="addrOut">—</b></div>
+      <div class="row"><span class="mut">Network</span><b id="netOut">—</b></div>
+      <div class="row"><span class="mut">Agent ID</span><b id="agentOut">—</b></div>
+      <div class="row"><span class="mut">BNB balance</span><b id="bnbOut">—</b></div>
+      <div class="row"><span class="mut">$FDG balance</span><b id="fdgOut">—</b></div>
+      <div class="small">The Agent ID gate is checked on mint (the Tree contract reads the Agent ID registry). If you hold no Agent ID, minting reverts — the gate is enforced by the contract, not by this page.</div>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="card">
+    <h2>Grove stats</h2>
+    <div class="row"><span class="mut">Trees minted</span><b id="treeMinted">—</b></div>
+    <div class="bar"><div id="treeBar"></div></div>
+    <div class="row"><span class="mut">Yggdrasil minted</span><b id="yggMinted">—</b></div>
+    <div class="bar"><div id="yggBar"></div></div>
+    <div class="row"><span class="mut">Mining reserve left</span><b id="reserveOut">—</b></div>
+    <div class="row"><span class="mut">Mining total weight</span><b id="totalWeightOut">—</b></div>
+    <div class="row"><span class="mut">Tree contract</span><b id="treePaused">—</b></div>
+  </div>
+
+  <!-- 2. MINT -->
+  <div class="card">
+    <h2>2 · Mint a tree</h2>
+    <div class="row"><span class="mut">Price</span><b>0.0013 BNB (~$0.90) per tree</b></div>
+    <div class="row"><span class="mut">First tree per wallet</span><b>FREE (gas only)</b></div>
+    <div class="row"><span class="mut">You have minted</span><b id="myMinted">—</b></div>
+    <div class="row"><span class="mut">Fee for this mint</span><b id="feeOut">—</b></div>
+    <div class="qty">
+      <button id="qtyMinus">−</button><span id="qtyOut">1</span><button id="qtyPlus">+</button>
+      <span class="mut" style="font-size:13px">trees (max 9 per wallet)</span>
+    </div>
+    <label class="small">Referrer (optional — leave blank for none)
+      <input type="text" id="referrerIn" placeholder="0x… (optional)">
+    </label>
+    <button class="btn gold" id="mintBtn" disabled>Mint</button>
+    <div class="small" style="margin-top:8px">Mint fee split: <b>80% to the $FDG/BNB liquidity pool</b>, 20% to the team. Fees are forwarded immediately — the Tree contract holds 0 BNB.</div>
+  </div>
+
+  <!-- 3. MY TREES -->
+  <div class="card">
+    <h2>3 · My trees</h2>
+    <div class="small">Click a tree to select it. Select <b>9</b> for a merge, or <b>3 of the same rarity</b> for synthesis. Realm names are display labels — the contract stores realm 0–8.</div>
+    <div class="btnrow">
+      <button class="btn ghost" id="refreshTreesBtn">Refresh my trees</button>
+      <button class="btn ghost" id="clearSelBtn">Clear selection</button>
+    </div>
+    <div class="grid" id="treeGrid"><span class="mut">Connect a wallet to load your trees.</span></div>
+    <div class="row"><span class="mut">Selected</span><b id="selOut">none</b></div>
+  </div>
+
+  <!-- 4. MERGE -->
+  <div class="card">
+    <h2>4 · Merge → Yggdrasil</h2>
+    <div class="row"><span class="mut">Merge fee</span><b>1,000 $FDG (burned to the dead address)</b></div>
+    <div class="row"><span class="mut">Realms covered by selection</span><b id="realmCover">—</b></div>
+    <div class="row"><span class="mut">Resulting weight</span><b id="weightOut">—</b></div>
+    <div class="small">Weight 10 normally, <b>20 for a Full Set</b> (all 9 different realms). A Full Set by random minting is ~0.1% — most Full Sets are completed by trading single trees.</div>
+    <div class="btnrow">
+      <button class="btn ghost" id="approveFdgBtn" disabled>1 · Approve 1,000 FDG</button>
+      <button class="btn ghost" id="approveTreesBtn" disabled>2 · Approve trees</button>
+    </div>
+    <button class="btn" id="mergeBtn" disabled>Merge 9 trees → Yggdrasil</button>
+  </div>
+
+  <!-- 5. MY YGGDRASIL -->
+  <div class="card">
+    <h2>5 · My Yggdrasil</h2>
+    <div class="grid" id="yggGrid"><span class="mut">Connect a wallet to load your Yggdrasil.</span></div>
+    <div class="small">Staked Yggdrasil are held by the mining contract — they show below under Mining (remembered from this browser + on-chain stakedBy). If you staked elsewhere, paste the token ID in the Unstake box.</div>
+  </div>
+
+  <!-- 6. MINING -->
+  <div class="card">
+    <h2>6 · Mining dashboard</h2>
+    <div class="row"><span class="mut">Mining start</span><b id="mineStart">—</b></div>
+    <div class="row"><span class="mut">Current tranche</span><b id="trancheOut">—</b></div>
+    <div class="row"><span class="mut">Your pending reward</span><b id="pendingOut">—</b></div>
+    <div class="row"><span class="mut">Your weight</span><b id="myWeightOut">—</b></div>
+    <div class="row"><span class="mut">Your boost</span><b id="boostOut">—</b></div>
+    <table id="trancheTable"></table>
+    <div class="btnrow">
+      <button class="btn" id="stakeBtn" disabled>Stake selected Yggdrasil</button>
+      <button class="btn ghost" id="unstakeBtn" disabled>Unstake by ID</button>
+    </div>
+    <input type="text" id="unstakeIdIn" placeholder="Yggdrasil token ID to unstake">
+    <button class="btn gold" id="claimBtn" disabled>Claim $FDG</button>
+    <h2 style="margin-top:18px">Boost · 1.5x</h2>
+    <div class="small">Stake <b>10,000 $FDG</b> to boost all your staked Yggdrasil to 1.5x weight. The FDG is locked while boosting and returned in full when you unstake the boost.</div>
+    <div class="btnrow">
+      <button class="btn blue" id="stakeBoostBtn" disabled>Stake 10,000 FDG boost</button>
+      <button class="btn ghost" id="unstakeBoostBtn" disabled>Unstake boost</button>
+    </div>
+    <div class="small" style="margin-top:8px">No one — including the project owner — can withdraw the mining reserve except through mining claims. The reserve only leaves via <b>claim()</b>.</div>
+  </div>
+
+  <!-- 7. LOTTERY -->
+  <div class="card">
+    <h2>7 · Lottery</h2>
+    <div class="row"><span class="mut">Weekly draw</span><b>Every wallet that minted a tree that week is entered</b></div>
+    <div class="row"><span class="mut">Weekly prize</span><b>1 Yggdrasil + $FDG</b></div>
+    <div class="row"><span class="mut">$FDG ticket draw</span><b>100 $FDG per ticket (burned)</b></div>
+    <div class="small">How it works: minting a tree enters you in that week's draw automatically — there is nothing extra to click. The draw is run by the operator (chain randomness, announced publicly); the $FDG ticket draw burns the ticket price, so every ticket makes $FDG scarcer. There is no ticket-buying contract in v1 — if a ticket round is live, the entry link is announced on the project's channels. Do not send $FDG to any address claiming to sell tickets unless it is announced here.</div>
+  </div>
+
+  <!-- 8. SYNTHESIS -->
+  <div class="card">
+    <h2>8 · SR synthesis</h2>
+    <div class="small">Burn <b>3 trees of the same rarity</b> → mint <b>1 tree one tier higher</b> (N→R→SR→SSR). The new tree keeps the realm of the first burned tree. Net supply change: −2 per synthesis. SSR cannot be synthesized higher. Synthesis requires an Agent ID (checked by the contract).</div>
+    <div class="row"><span class="mut">Selected for synthesis</span><b id="synthSelOut">none</b></div>
+    <div class="row"><span class="mut">Result</span><b id="synthResultOut">—</b></div>
+    <button class="btn gold" id="synthBtn" disabled>Synthesize 3 → 1</button>
+  </div>
+
+  <div class="foot">
+    First-Dollar Grove · $FDG · contracts (testnet):<br>
+    FDG <span id="footFdg"></span><br>
+    Tree <span id="footTree"></span><br>
+    Yggdrasil <span id="footYgg"></span><br>
+    Mining <span id="footMine"></span><br>
+    <span id="footNote"></span>
+  </div>
+</div>
+<script>
+const ABIS = {"FDG": [{"inputs": [{"internalType": "address", "name": "owner", "type": "address"}, {"internalType": "address", "name": "spender", "type": "address"}], "name": "allowance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "spender", "type": "address"}, {"internalType": "uint256", "name": "value", "type": "uint256"}], "name": "approve", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "account", "type": "address"}], "name": "balanceOf", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "decimals", "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "name", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "symbol", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalSupply", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}], "TREE": [{"inputs": [], "name": "AGENT_ID_REGISTRY", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "MAX_PER_WALLET", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "MAX_SUPPLY", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "to", "type": "address"}, {"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "approve", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "owner", "type": "address"}], "name": "balanceOf", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "getApproved", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "owner", "type": "address"}, {"internalType": "address", "name": "operator", "type": "address"}], "name": "isApprovedForAll", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "liquidityWallet", "outputs": [{"internalType": "address payable", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "quantity", "type": "uint256"}, {"internalType": "address", "name": "referrer", "type": "address"}], "name": "mint", "outputs": [], "stateMutability": "payable", "type": "function"}, {"inputs": [], "name": "mintFee", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "minter", "type": "address"}, {"internalType": "uint256", "name": "quantity", "type": "uint256"}], "name": "mintFeeFor", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "mintedByWallet", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "name", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "ownerOf", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "paused", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "rarityOf", "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "realmOf", "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "operator", "type": "address"}, {"internalType": "bool", "name": "approved", "type": "bool"}], "name": "setApprovalForAll", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "symbol", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256[3]", "name": "tokenIds", "type": "uint256[3]"}], "name": "synthesize", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "teamWallet", "outputs": [{"internalType": "address payable", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "tokenURI", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalMinted", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalSupply", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}], "YGG": [{"inputs": [], "name": "BASE_WEIGHT", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "FULL_SET_MASK", "outputs": [{"internalType": "uint16", "name": "", "type": "uint16"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "FULL_SET_WEIGHT", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "MAX_SUPPLY", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "to", "type": "address"}, {"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "approve", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "owner", "type": "address"}], "name": "balanceOf", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "getApproved", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "owner", "type": "address"}, {"internalType": "address", "name": "operator", "type": "address"}], "name": "isApprovedForAll", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256[9]", "name": "treeTokenIds", "type": "uint256[9]"}], "name": "merge", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "mergeFee", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "name", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "ownerOf", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "paused", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "operator", "type": "address"}, {"internalType": "bool", "name": "approved", "type": "bool"}], "name": "setApprovalForAll", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "symbol", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalMinted", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalSupply", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "weightOf", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}], "MINING": [{"inputs": [], "name": "TOTAL_DURATION", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "TOTAL_EMISSION", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "boostActive", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "boostDenominator", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "boostNumerator", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "boostStaked", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "boostThreshold", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "claim", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "fdg", "outputs": [{"internalType": "contract IERC20", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "user", "type": "address"}], "name": "pendingReward", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "reserveRemaining", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "stake", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "stakeBoost", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "stakedBy", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "startTime", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalWeight", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}], "name": "unstake", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "unstakeBoost", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "userBaseWeight", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "user", "type": "address"}], "name": "userWeight", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "ygg", "outputs": [{"internalType": "contract IGroveYggdrasil", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}], "REGISTRY": [{"inputs": [{"name": "account", "type": "address"}], "name": "balanceOf", "outputs": [{"name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}]};
+</script>
+<script>
+/* ================= Grove site logic (ethers v6) ================= */
+const $ = (id) => document.getElementById(id);
+const statusEl = $("status");
+const ZERO = ethers.ZeroAddress;
+let provider = null, signer = null, account = null;
+let fdgR, treeR, yggR, mineR, regR;          // read-only contracts
+let fdgW, treeW, yggW, mineW;                // signer-bound contracts
+let registryAddr = null;
+let myTrees = [];    // {id, realm, rarity}
+let myYgg = [];      // {id, weight, staked}
+let selected = new Set(); // selected tree ids (merge + synthesis share this)
+let selectedYgg = null;
+let quantity = 1;
+let cachedFee = 0n;
+let miningStart = 0n;
+
+function setStatus(msg, cls) { statusEl.textContent = msg; statusEl.className = cls || ""; }
+function fmtFDG(wei) { return Number(ethers.formatEther(wei)).toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+function fmtBNB(wei) { return Number(ethers.formatEther(wei)).toFixed(6); }
+function usdOfBNB(wei) { return "$" + (Number(ethers.formatEther(wei)) * CONFIG.BNB_USD).toFixed(2); }
+function shortAddr(a) { return a ? a.slice(0, 6) + "…" + a.slice(-4) : "—"; }
+function realmName(r) { return CONFIG.REALM_NAMES[r] + " (" + r + ")"; }
+function rarityLabel(r) { return CONFIG.RARITY_LABELS[r]; }
+function rarityClass(r) { return ["", "r", "sr", "ssr"][r] || ""; }
+
+/* ---------- read-only init ---------- */
+async function init() {
+  provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
+  fdgR = new ethers.Contract(CONFIG.FDG, ABIS.FDG, provider);
+  treeR = new ethers.Contract(CONFIG.TREE, ABIS.TREE, provider);
+  yggR = new ethers.Contract(CONFIG.YGG, ABIS.YGG, provider);
+  mineR = new ethers.Contract(CONFIG.MINING, ABIS.MINING, provider);
+  try { registryAddr = await treeR.AGENT_ID_REGISTRY(); regR = new ethers.Contract(registryAddr, ABIS.REGISTRY, provider); } catch (e) { /* registry read failed; gate check will warn */ }
+  $("footFdg").textContent = CONFIG.FDG;
+  $("footTree").textContent = CONFIG.TREE;
+  $("footYgg").textContent = CONFIG.YGG;
+  $("footMine").textContent = CONFIG.MINING;
+  $("footNote").textContent = "Network: " + CONFIG.CHAIN_NAME + " (chain " + CONFIG.CHAIN_ID + "). USD figures use a fixed ~$" + CONFIG.BNB_USD + "/BNB and are approximate.";
+  renderTrancheTable();
+  await refreshStats();
+  await refreshMiningPublic();
+  wireButtons();
+}
+
+function renderTrancheTable() {
+  let html = "<tr><th>Tranche</th><th>FDG</th><th>Days</th><th>Rate/day</th></tr>";
+  CONFIG.TRANCHES.forEach((t, i) => {
+    html += "<tr data-tranche=\"" + i + "\"><td>" + (i + 1) + "</td><td>" + t.amount.toLocaleString() + "</td><td>" + t.days + "</td><td>" + Math.round(t.amount / t.days).toLocaleString() + "</td></tr>";
+  });
+  $("trancheTable").innerHTML = html;
+}
+
+function currentTrancheIndex(nowSec) {
+  if (!miningStart) return -1;
+  const elapsedDays = (nowSec - Number(miningStart)) / 86400;
+  if (elapsedDays < 0) return -1; // not started
+  let acc = 0;
+  for (let i = 0; i < CONFIG.TRANCHES.length; i++) {
+    acc += CONFIG.TRANCHES[i].days;
+    if (elapsedDays < acc) return i;
+  }
+  return CONFIG.TRANCHES.length; // finished
+}
+
+async function refreshStats() {
+  try {
+    const [tm, ym, reserve, tw, paused] = await Promise.all([
+      treeR.totalMinted(), yggR.totalMinted(), mineR.reserveRemaining(), mineR.totalWeight(), treeR.paused()
+    ]);
+    $("treeMinted").textContent = Number(tm).toLocaleString() + " / " + CONFIG.TREE_MAX_SUPPLY.toLocaleString();
+    $("treeBar").style.width = Math.min(100, Number(tm) / CONFIG.TREE_MAX_SUPPLY * 100) + "%";
+    $("yggMinted").textContent = Number(ym).toLocaleString() + " / " + CONFIG.YGG_MAX_SUPPLY.toLocaleString();
+    $("yggBar").style.width = Math.min(100, Number(ym) / CONFIG.YGG_MAX_SUPPLY * 100) + "%";
+    $("reserveOut").textContent = fmtFDG(reserve) + " FDG";
+    $("totalWeightOut").textContent = tw.toString();
+    $("treePaused").textContent = paused ? "PAUSED — minting closed" : "Live (not paused)";
+  } catch (e) { /* stats are best-effort before connect */ }
+}
+
+async function refreshMiningPublic() {
+  try {
+    miningStart = await mineR.startTime();
+    const start = new Date(Number(miningStart) * 1000);
+    $("mineStart").textContent = start.toUTCString() + " (" + Number(miningStart) + ")";
+    const nowSec = Math.floor(Date.now() / 1000);
+    const ti = currentTrancheIndex(nowSec);
+    if (ti === -1) $("trancheOut").textContent = "Not started yet";
+    else if (ti >= CONFIG.TRANCHES.length) $("trancheOut").textContent = "Finished (45 days elapsed)";
+    else $("trancheOut").textContent = "Tranche " + (ti + 1) + " — " + CONFIG.TRANCHES[ti].label;
+    document.querySelectorAll("#trancheTable tr[data-tranche]").forEach(tr => {
+      tr.classList.toggle("cur", Number(tr.dataset.tranche) === ti);
+    });
+  } catch (e) { /* best-effort */ }
+}
+
+/* ---------- wallet ---------- */
+async function connectWallet() {
+  if (!window.ethereum) { setStatus("MetaMask not found — install it, then reload.", "err"); return; }
+  try {
+    setStatus("Requesting wallet…");
+    provider = new ethers.BrowserProvider(window.ethereum);
+    const net = await provider.getNetwork();
+    if (Number(net.chainId) !== CONFIG.CHAIN_ID) {
+      setStatus("Wrong network: wallet is on chain " + net.chainId + ", this page expects " + CONFIG.CHAIN_ID + " (" + CONFIG.CHAIN_NAME + "). Switch networks in MetaMask and reconnect.", "err");
+      try {
+        await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x" + CONFIG.CHAIN_ID.toString(16) }] });
+      } catch (e) { /* user declined or chain not added; leave the warning up */ }
+    }
+    signer = await provider.getSigner();
+    account = await signer.getAddress();
+    fdgW = new ethers.Contract(CONFIG.FDG, ABIS.FDG, signer);
+    treeW = new ethers.Contract(CONFIG.TREE, ABIS.TREE, signer);
+    yggW = new ethers.Contract(CONFIG.YGG, ABIS.YGG, signer);
+    mineW = new ethers.Contract(CONFIG.MINING, ABIS.MINING, signer);
+    // Re-point read contracts at the wallet provider too (same chain, fresher reads)
+    fdgR = new ethers.Contract(CONFIG.FDG, ABIS.FDG, provider);
+    treeR = new ethers.Contract(CONFIG.TREE, ABIS.TREE, provider);
+    yggR = new ethers.Contract(CONFIG.YGG, ABIS.YGG, provider);
+    mineR = new ethers.Contract(CONFIG.MINING, ABIS.MINING, provider);
+    $("walletBox").style.display = "";
+    $("connectBtn").textContent = "Connected ✓";
+    $("connectBtn").disabled = true;
+    $("addrOut").textContent = shortAddr(account) + "  (" + account + ")";
+    $("netOut").textContent = CONFIG.CHAIN_NAME + " (chain " + net.chainId + ")";
+    setStatus("Connected as " + account, "ok");
+    await refreshAll();
+    setInterval(refreshPendingOnly, 15000);
+  } catch (e) {
+    setStatus("Connect failed: " + ((e && e.message) || e), "err");
+  }
+}
+
+async function refreshWallet() {
+  try {
+    const bnb = await provider.getBalance(account);
+    $("bnbOut").textContent = fmtBNB(bnb) + " BNB (" + usdOfBNB(bnb) + ")";
+    const f = await fdgR.balanceOf(account);
+    $("fdgOut").textContent = fmtFDG(f) + " FDG";
+    if (regR && registryAddr) {
+      const has = await regR.balanceOf(account);
+      $("agentOut").textContent = has > 0n ? "YES ✓ (Agent ID held)" : "NO — minting will revert";
+      $("agentOut").style.color = has > 0n ? "var(--ok)" : "var(--bad)";
+    } else {
+      $("agentOut").textContent = "unknown (registry unreadable)";
+    }
+  } catch (e) { setStatus("Wallet refresh failed: " + (e.message || e), "err"); }
+}
+
+async function refreshMint() {
+  try {
+    const minted = await treeR.mintedByWallet(account);
+    $("myMinted").textContent = minted.toString() + " / " + CONFIG.MAX_PER_WALLET;
+    const remaining = CONFIG.MAX_PER_WALLET - Number(minted);
+    if (quantity > Math.max(1, remaining)) quantity = Math.max(1, remaining);
+    $("qtyOut").textContent = quantity;
+    cachedFee = await treeR.mintFeeFor(account, quantity);
+    $("feeOut").textContent = fmtBNB(cachedFee) + " BNB (" + usdOfBNB(cachedFee) + ")" + (Number(minted) === 0 ? " — first tree free, so this covers trees 2–" + quantity : "");
+    $("mintBtn").disabled = remaining <= 0;
+    $("mintBtn").textContent = remaining <= 0 ? "Wallet cap reached (9/9)" : "Mint " + quantity + " tree" + (quantity > 1 ? "s" : "");
+  } catch (e) { /* best-effort */ }
+}
+
+async function refreshAll() {
+  await refreshWallet();
+  await refreshStats();
+  await refreshMint();
+  await refreshTrees();
+  await refreshYgg();
+  await refreshMining();
+}
+
+/* ---------- token enumeration (scan 1..totalMinted, skip burned) ---------- */
+async function scanOwned(contract, totalMinted, owner) {
+  const ids = [];
+  const BATCH = 25;
+  for (let start = 1; start <= Number(totalMinted); start += BATCH) {
+    const end = Math.min(Number(totalMinted), start + BATCH - 1);
+    const results = await Promise.all(
+      Array.from({ length: end - start + 1 }, (_, k) => start + k).map(async (id) => {
+        try { const o = await contract.ownerOf(id); return o.toLowerCase() === owner.toLowerCase() ? id : null; }
+        catch (e) { return null; } // burned / unminted
+      })
+    );
+    results.forEach(id => { if (id !== null) ids.push(id); });
+  }
+  return ids;
+}
+
+async function refreshTrees() {
+  const grid = $("treeGrid");
+  grid.innerHTML = "<span class='mut'>Loading…</span>";
+  try {
+    const total = await treeR.totalMinted();
+    const ids = await scanOwned(treeR, total, account);
+    myTrees = [];
+    for (const id of ids) {
+      const [realm, rarity] = await Promise.all([treeR.realmOf(id), treeR.rarityOf(id)]);
+      myTrees.push({ id, realm: Number(realm), rarity: Number(rarity) });
+    }
+    renderTrees();
+  } catch (e) { grid.innerHTML = "<span class='mut'>Failed to load trees: " + (e.message || e) + "</span>"; }
+}
+
+function renderTrees() {
+  const grid = $("treeGrid");
+  if (!myTrees.length) { grid.innerHTML = "<span class='mut'>You own no trees yet — mint one above.</span>"; }
+  else {
+    grid.innerHTML = "";
+    myTrees.forEach(t => {
+      const d = document.createElement("div");
+      d.className = "nft" + (selected.has(t.id) ? " sel" : "");
+      d.innerHTML = "<b>Tree #" + t.id + "</b><br>" + realmName(t.realm) + "<br><span class='pill " + rarityClass(t.rarity) + "'>" + rarityLabel(t.rarity) + "</span>";
+      d.onclick = () => { selected.has(t.id) ? selected.delete(t.id) : selected.add(t.id); renderTrees(); updateSelectionPanels(); };
+      grid.appendChild(d);
+    });
+  }
+  updateSelectionPanels();
+}
+
+function updateSelectionPanels() {
+  const sel = [...selected].sort((a, b) => a - b);
+  $("selOut").textContent = sel.length ? sel.map(id => "#" + id).join(", ") : "none";
+  // Merge preview
+  const realms = new Set(sel.map(id => (myTrees.find(t => t.id === id) || {}).realm));
+  const full = realms.size === 9;
+  $("realmCover").textContent = sel.length ? [...realms].sort((a, b) => a - b).join(", ") + " (" + realms.size + "/9 realms)" : "—";
+  $("weightOut").textContent = sel.length === 9 ? (full ? "20 (Full Set!)" : "10") : "— (select exactly 9)";
+  $("mergeBtn").disabled = !(account && sel.length === 9);
+  $("approveFdgBtn").disabled = !(account && sel.length === 9);
+  $("approveTreesBtn").disabled = !(account && sel.length === 9);
+  // Synthesis preview
+  const selTrees = sel.map(id => myTrees.find(t => t.id === id)).filter(Boolean);
+  const sameRarity = selTrees.length === 3 && selTrees.every(t => t.rarity === selTrees[0].rarity);
+  const canSynth = sameRarity && selTrees[0].rarity < 3;
+  $("synthSelOut").textContent = sel.length ? sel.map(id => "#" + id).join(", ") : "none";
+  $("synthResultOut").textContent =
+    selTrees.length !== 3 ? "— (select exactly 3)" :
+    !sameRarity ? "Inputs must share the same rarity" :
+    selTrees[0].rarity >= 3 ? "SSR cannot be synthesized higher" :
+    "→ 1 × " + rarityLabel(selTrees[0].rarity + 1) + " tree, realm " + realmName(selTrees[0].realm) + " (kept from first input)";
+  $("synthBtn").disabled = !(account && canSynth);
+}
+
+async function refreshYgg() {
+  const grid = $("yggGrid");
+  grid.innerHTML = "<span class='mut'>Loading…</span>";
+  try {
+    const total = await yggR.totalMinted();
+    const ids = await scanOwned(yggR, total, account);
+    myYgg = [];
+    for (const id of ids) {
+      const w = await yggR.weightOf(id);
+      myYgg.push({ id, weight: Number(w), staked: false });
+    }
+    // Staked ones (held by the mining contract): best-effort discovery.
+    const staked = await discoverStaked();
+    staked.forEach(id => { if (!myYgg.some(y => y.id === id)) myYgg.push({ id, weight: 0, staked: true }); });
+    renderYgg();
+  } catch (e) { grid.innerHTML = "<span class='mut'>Failed to load Yggdrasil: " + (e.message || e) + "</span>"; }
+}
+
+function renderYgg() {
+  const grid = $("yggGrid");
+  if (!myYgg.length) { grid.innerHTML = "<span class='mut'>You own no Yggdrasil yet — merge 9 trees to make one.</span>"; }
+  else {
+    grid.innerHTML = "";
+    myYgg.forEach(y => {
+      const d = document.createElement("div");
+      d.className = "nft" + (y.staked ? " staked" : "") + (selectedYgg === y.id ? " sel" : "");
+      d.innerHTML = "<b>Yggdrasil #" + y.id + "</b><br>weight " + (y.weight || "—") + (y.staked ? "<br><span class='pill'>STAKED in mining</span>" : "<br><span class='pill'>in wallet — click to select for staking</span>");
+      d.onclick = () => { if (!y.staked) { selectedYgg = selectedYgg === y.id ? null : y.id; renderYgg(); updateMiningButtons(); } };
+      grid.appendChild(d);
+    });
+  }
+  updateMiningButtons();
+}
+
+function stakedIdsStored() {
+  try { return JSON.parse(localStorage.getItem("grove_staked_" + CONFIG.CHAIN_ID + "_" + (account || "")) || "[]"); }
+  catch (e) { return []; }
+}
+function storeStakedIds(ids) {
+  try { localStorage.setItem("grove_staked_" + CONFIG.CHAIN_ID + "_" + (account || ""), JSON.stringify(ids)); } catch (e) { /* storage unavailable */ }
+}
+
+async function discoverStaked() {
+  const out = [];
+  // (a) remembered in this browser, verified on-chain
+  for (const id of stakedIdsStored()) {
+    try { const s = await mineR.stakedBy(id); if (s.toLowerCase() === account.toLowerCase()) out.push(id); } catch (e) { /* ignore */ }
+  }
+  // (b) best-effort log scan: Yggdrasil Transfers to the mining contract
+  try {
+    const filter = yggR.filters.Transfer(account, CONFIG.MINING);
+    const logs = await yggR.queryFilter(filter, 0, "latest");
+    for (const log of logs) {
+      const id = Number(log.args.tokenId);
+      try { const s = await mineR.stakedBy(id); if (s.toLowerCase() === account.toLowerCase() && !out.includes(id)) out.push(id); } catch (e) { /* ignore */ }
+    }
+  } catch (e) { /* log scan failed (RPC limits) — fall back to stored + manual entry */ }
+  return out;
+}
+
+async function refreshMining() {
+  try {
+    await refreshMiningPublic();
+    const [reserve, tw, uw, ubw, active, staked] = await Promise.all([
+      mineR.reserveRemaining(), mineR.totalWeight(), mineR.userWeight(account),
+      mineR.userBaseWeight(account), mineR.boostActive(account), mineR.boostStaked(account)
+    ]);
+    $("reserveOut").textContent = fmtFDG(reserve) + " FDG";
+    $("totalWeightOut").textContent = tw.toString();
+    $("myWeightOut").textContent = uw.toString() + " (base " + ubw.toString() + ")";
+    $("boostOut").textContent = active ? "ACTIVE — " + fmtFDG(staked) + " FDG locked (1.5x)" : "inactive";
+    $("stakeBoostBtn").disabled = !account || active;
+    $("unstakeBoostBtn").disabled = !account || !active;
+    await refreshPendingOnly();
+    updateMiningButtons();
+  } catch (e) { /* best-effort */ }
+}
+
+function updateMiningButtons() {
+  const hasSel = selectedYgg !== null && myYgg.some(y => y.id === selectedYgg && !y.staked);
+  $("stakeBtn").disabled = !account || !hasSel;
+  $("stakeBtn").textContent = hasSel ? "Stake Yggdrasil #" + selectedYgg : "Stake selected Yggdrasil";
+  $("unstakeBtn").disabled = !account;
+  $("claimBtn").disabled = !account;
+}
+
+async function refreshPendingOnly() {
+  if (!account || !mineR) return;
+  try {
+    const p = await mineR.pendingReward(account);
+    $("pendingOut").textContent = fmtFDG(p) + " FDG";
+  } catch (e) { /* ignore transient read errors */ }
+}
+
+/* ---------- writes ---------- */
+async function sendTx(promiseFn, label) {
+  setStatus(label + " — waiting for wallet confirmation…");
+  try {
+    const tx = await promiseFn();
+    setStatus(label + " — sent: " + tx.hash + " — waiting for confirmation…");
+    const rc = await tx.wait();
+    if (rc.status !== 1) throw new Error("transaction reverted (status 0)");
+    setStatus(label + " — confirmed ✓ (" + tx.hash + ")", "ok");
+    return rc;
+  } catch (e) {
+    setStatus(label + " — failed: " + ((e && e.message) || e), "err");
+    throw e;
+  }
+}
+
+async function doMint() {
+  if (!signer) return;
+  const ref = $("referrerIn").value.trim();
+  const referrer = ref === "" ? ZERO : ref;
+  if (ref !== "" && !ethers.isAddress(ref)) { setStatus("Referrer is not a valid address (leave blank for none).", "err"); return; }
+  const fee = await treeR.mintFeeFor(account, quantity);
+  await sendTx(() => treeW.mint(quantity, referrer, { value: fee }), "Mint " + quantity + " tree(s)");
+  await refreshAll();
+}
+
+async function ensureFdgAllowance(spender, amount) {
+  const allow = await fdgR.allowance(account, spender);
+  if (allow < amount) {
+    await sendTx(() => fdgW.approve(spender, amount), "Approve " + fmtFDG(amount) + " FDG");
+  }
+}
+async function ensureTreeApprovalForYgg() {
+  const ok = await treeR.isApprovedForAll(account, CONFIG.YGG);
+  if (!ok) await sendTx(() => treeW.setApprovalForAll(CONFIG.YGG, true), "Approve Yggdrasil contract for your trees");
+}
+
+async function doMerge() {
+  if (!signer || selected.size !== 9) return;
+  const ids = [...selected].sort((a, b) => a - b);
+  // every selected tree must still be owned by the wallet
+  for (const id of ids) {
+    const o = await treeR.ownerOf(id);
+    if (o.toLowerCase() !== account.toLowerCase()) { setStatus("Tree #" + id + " is no longer in your wallet — refresh and re-select.", "err"); return; }
+  }
+  const fee = await yggR.mergeFee();
+  await ensureFdgAllowance(CONFIG.YGG, fee);
+  await ensureTreeApprovalForYgg();
+  await sendTx(() => yggW.merge(ids), "Merge 9 trees → Yggdrasil (burns " + fmtFDG(fee) + " FDG)");
+  selected.clear();
+  await refreshAll();
+}
+
+async function doStake() {
+  if (!signer || selectedYgg === null) return;
+  const id = selectedYgg;
+  const approved = await yggR.getApproved(id);
+  const allOk = await yggR.isApprovedForAll(account, CONFIG.MINING);
+  if (approved.toLowerCase() !== CONFIG.MINING.toLowerCase() && !allOk) {
+    await sendTx(() => yggW.approve(CONFIG.MINING, id), "Approve mining contract for Yggdrasil #" + id);
+  }
+  await sendTx(() => mineW.stake(id), "Stake Yggdrasil #" + id);
+  const stored = stakedIdsStored(); if (!stored.includes(id)) { stored.push(id); storeStakedIds(stored); }
+  selectedYgg = null;
+  await refreshAll();
+}
+
+async function doUnstake() {
+  if (!signer) return;
+  const id = Number($("unstakeIdIn").value.trim());
+  if (!id) { setStatus("Enter a Yggdrasil token ID to unstake.", "err"); return; }
+  await sendTx(() => mineW.unstake(id), "Unstake Yggdrasil #" + id);
+  storeStakedIds(stakedIdsStored().filter(x => x !== id));
+  await refreshAll();
+}
+
+async function doClaim() {
+  if (!signer) return;
+  await sendTx(() => mineW.claim(), "Claim $FDG");
+  await refreshAll();
+}
+
+async function doStakeBoost() {
+  if (!signer) return;
+  const threshold = await mineR.boostThreshold();
+  await ensureFdgAllowance(CONFIG.MINING, threshold);
+  await sendTx(() => mineW.stakeBoost(threshold), "Stake " + fmtFDG(threshold) + " FDG boost (1.5x)");
+  await refreshAll();
+}
+
+async function doUnstakeBoost() {
+  if (!signer) return;
+  await sendTx(() => mineW.unstakeBoost(), "Unstake boost (returns locked FDG)");
+  await refreshAll();
+}
+
+async function doSynthesize() {
+  if (!signer || selected.size !== 3) return;
+  const ids = [...selected].sort((a, b) => a - b);
+  const trees = ids.map(id => myTrees.find(t => t.id === id)).filter(Boolean);
+  if (trees.length !== 3 || !trees.every(t => t.rarity === trees[0].rarity)) { setStatus("Synthesis needs exactly 3 trees of the same rarity.", "err"); return; }
+  if (trees[0].rarity >= 3) { setStatus("SSR cannot be synthesized higher.", "err"); return; }
+  await sendTx(() => treeW.synthesize(ids), "Synthesize 3 × " + rarityLabel(trees[0].rarity) + " → 1 × " + rarityLabel(trees[0].rarity + 1));
+  selected.clear();
+  await refreshAll();
+}
+
+/* ---------- wiring ---------- */
+function wireButtons() {
+  $("connectBtn").onclick = connectWallet;
+  $("qtyMinus").onclick = () => { if (quantity > 1) { quantity--; refreshMint(); } };
+  $("qtyPlus").onclick = () => { if (quantity < 9) { quantity++; refreshMint(); } };
+  $("mintBtn").onclick = doMint;
+  $("refreshTreesBtn").onclick = refreshTrees;
+  $("clearSelBtn").onclick = () => { selected.clear(); renderTrees(); };
+  $("approveFdgBtn").onclick = async () => {
+    if (!signer) return;
+    const fee = await yggR.mergeFee();
+    await ensureFdgAllowance(CONFIG.YGG, fee);
+    setStatus("FDG approved for merging ✓", "ok");
+  };
+  $("approveTreesBtn").onclick = async () => { if (!signer) return; await ensureTreeApprovalForYgg(); setStatus("Trees approved for merging ✓", "ok"); };
+  $("mergeBtn").onclick = doMerge;
+  $("stakeBtn").onclick = doStake;
+  $("unstakeBtn").onclick = doUnstake;
+  $("claimBtn").onclick = doClaim;
+  $("stakeBoostBtn").onclick = doStakeBoost;
+  $("unstakeBoostBtn").onclick = doUnstakeBoost;
+  $("synthBtn").onclick = doSynthesize;
+  if (window.ethereum) {
+    window.ethereum.on("accountsChanged", () => location.reload());
+    window.ethereum.on("chainChanged", () => location.reload());
+  }
+}
+
+init().catch(e => setStatus("Init failed: " + (e.message || e), "err"));
+</script>
+</body>
+</html>
