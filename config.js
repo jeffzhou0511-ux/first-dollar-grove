@@ -1,23 +1,22 @@
 // ============================================================================
 // First-Dollar Grove — site config
-// *** TESTNET — swap the 4 addresses + CHAIN_ID + RPC_URL to mainnet after deploy ***
-// Mainnet deploy is a ONE-EDIT swap: replace the values in CONFIG below.
-// Do NOT change any other file.
+// *** MAINNET — deployed 2026-11-06, minting LIVE ***
+// Contracts below are the BSC mainnet addresses. Do NOT change any other file.
 // ============================================================================
 const CONFIG = {
-  // --- Network (BSC testnet, chain 97). Mainnet: chainId 56, RPC https://bsc-dataseed1.binance.org ---
-  CHAIN_ID: 97,
-  CHAIN_NAME: "BSC Testnet",
-  RPC_URL: "https://data-seed-prebsc-1-s1.binance.org:8545",
-  EXPLORER: "https://testnet.bscscan.com",
+  // --- Network (BSC mainnet, chain 56) ---
+  CHAIN_ID: 56,
+  CHAIN_NAME: "BSC Mainnet",
+  RPC_URL: "https://bsc-dataseed1.binance.org",
+  EXPLORER: "https://bscscan.com",
 
-  // --- Contracts (BSC TESTNET — deployed 2026-11-06, 48/48 tests PASS) ---
-  FDG:     "0x08C0efe137093EedB8370691f01eb69A49D9aab5", // GroveToken ($FDG)
-  TREE:    "0xFCFCf53a8Dc4fA370a7b29Cf672dedAeAba134Cd", // GroveTree (GROVE)
-  YGG:     "0x81D5f6654059D6CA42822fB6393a01e71eC49303", // GroveYggdrasil (FDY)
-  MINING:  "0x8B7Fca573E7871002ab4Bdd333ed71aB9eFB2579", // GroveMining
+  // --- Contracts (BSC MAINNET — deployed 2026-11-06) ---
+  FDG:     "0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8", // GroveToken ($FDG)
+  TREE:    "0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611", // GroveTree (GROVE)
+  YGG:     "0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D", // GroveYggdrasil (FDY)
+  MINING:  "0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244", // GroveMining
   // Agent ID registry is read from the Tree contract (AGENT_ID_REGISTRY).
-  // Testnet it points at the mock registry; mainnet it is the real HandleRegistry.
+  // Mainnet it is the real HandleRegistry (0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F).
 
   // --- Pricing / economics (from the plan) ---
   MINT_FEE_BNB: "0.0013",   // per tree after the first free one (~$0.90)
