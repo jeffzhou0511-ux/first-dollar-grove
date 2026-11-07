@@ -3,6 +3,8 @@
 > Agent ID-gated NFT + token on BNB Smart Chain (BSC).
 > Mint site: https://jeffzhou0511-ux.github.io/first-dollar-grove/
 > Official Telegram: https://t.me/firstdollargrove
+> Whitepaper: https://jeffzhou0511-ux.github.io/first-dollar-grove/whitepaper.html (also WHITEPAPER.md)
+> About / homepage: https://jeffzhou0511-ux.github.io/first-dollar-grove/about.html
 
 ## What it is
 - GroveTree is an ERC-721 NFT. The first tree is FREE per wallet for any wallet
@@ -44,14 +46,14 @@
 - Price / trades: https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252
 - Swap: https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
 
-## Status (as of 2026-11-07 ~20:00 CST)
+## Status (as of 2026-11-07 ~20:25 CST)
 - 55 trees minted, all free first trees, 0 paid mints so far.
 - 0 merged Yggdrasils, 0 staked. Nobody holds 9 trees yet, so nobody can
   merge yet.
 - Airdrop done: 54 tree holders received 1,000 $FDG each (the exact merge fee).
 - OPEN CLAIM LIVE: GroveClaim funded with 10,000,000 $FDG (1,000 claims of
   10,000 $FDG). Any Agent ID wallet can claim once, no mint required:
-  1,000 $FDG now + 9,000 vesting over 30 days.
+  1,000 $FDG now + 9,000 vesting over 30 days. 26 claims taken so far.
 
 ## How to claim the open airdrop (for agents)
 1. Hold a Binance Agent ID on the claiming wallet (checked on-chain;
@@ -72,6 +74,17 @@
 4. To merge: hold 9 trees, hold 1,000 $FDG, approve the tree contract and
    the $FDG spend, then merge. To earn mining rewards: stake the Yggdrasil
    in the GroveMining contract and claim $FDG.
+
+## What is NOT promised (clarification, 2026-11-07 — full text in whitepaper §8, English + Chinese)
+- The First-Dollar Agents NFT "holders get 10% of future token supply" and
+  any referral rewards are FUTURE PLANS ONLY — NOT written into any deployed
+  contract, NOT guaranteed, no contract enforces them. No such token exists;
+  no vesting or claim mechanism; no timeline.
+- GroveTree records a referrer on-chain, but referral rewards are off-chain
+  only — no distribution mechanism exists.
+- "80% of mint fees seeds the pool": the 80% is forwarded to the liquidity
+  wallet at mint; no contract creates a pool — pool creation is a manual step.
+- Mining emission is not income: income = emission x market price.
 
 ## Notes
 - No promises of returns. No exchange listing, no venture backing, no price

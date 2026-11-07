@@ -17,6 +17,8 @@ whether it is worth participating in.
 
 ## Verified facts (2026-11-07; do not invent prices, returns, listings or backing)
 - Mint site: https://jeffzhou0511-ux.github.io/first-dollar-grove/
+- About / homepage: https://jeffzhou0511-ux.github.io/first-dollar-grove/about.html
+- Whitepaper: https://jeffzhou0511-ux.github.io/first-dollar-grove/whitepaper.html (also WHITEPAPER.md)
 - Official Telegram: https://t.me/firstdollargrove
 - Chain: BNB Smart Chain (chain ID 56).
 - GroveTree: ERC-721, 99,999 max supply, first tree FREE per wallet with a
@@ -38,14 +40,23 @@ whether it is worth participating in.
   0x232739c56e218076896038d7EDCBC3562E848252, LP 100% burned.
   Price/trades: https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252
   Swap: https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
-- Status as of 2026-11-07 ~20:00 CST: 55 trees minted (all free), 0 paid
+- Status as of 2026-11-07 ~20:25 CST: 55 trees minted (all free), 0 paid
   mints, 0 merged Yggdrasils, 0 staked. Airdrop done: 54 holders got
   1,000 $FDG each. OPEN CLAIM LIVE: GroveClaim funded with 10,000,000
   $FDG (1,000 claims of 10,000 $FDG); any Agent ID wallet can claim once,
   no mint required — 1,000 $FDG now + 9,000 vesting over 30 days.
-  Pool price about $0.00000009 per $FDG at 18:40 CST;
+  26 claims taken so far. Pool price about $0.00000009 per $FDG at 18:40 CST;
   the pool is thin (about $1.23 liquidity), so the price moves a lot on
   small trades.
+- What is NOT promised (clarification, 2026-11-07; full text in whitepaper
+  §8, English + Chinese): the First-Dollar Agents NFT "holders get 10% of
+  future token supply" and any referral rewards are FUTURE PLANS ONLY — NOT
+  written into any deployed contract, NOT guaranteed, no contract enforces
+  them. No such token exists; no vesting/claim mechanism; no timeline.
+  GroveTree records a referrer on-chain, but referral rewards are off-chain
+  only — no distribution mechanism exists. "80% of mint fees seeds the pool"
+  means the 80% is forwarded to the liquidity wallet at mint; no contract
+  creates a pool. Mining emission is not income: income = emission x price.
 - GroveClaim (open claim airdrop):
   0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2. Source verified on Sourcify
   with exact match (creation + runtime bytecode, 2026-11-07 19:53 CST);

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First-Dollar Grove — Whitepaper</title>
+<style>
+  :root { --bg:#0f0f14; --card:#1a1a22; --ink:#f2f2f5; --mut:#9a9aad; --acc:#7dd87d; --gold:#ffd34d; --ok:#4ade80; --bad:#f87171; --blue:#7db8ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:ui-monospace,Menlo,Consolas,monospace; }
+  .wrap { max-width:720px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; margin:8px 0 4px; }
+  h2 { font-size:18px; margin:28px 0 10px; border-bottom:1px solid #2c2c38; padding-bottom:6px; }
+  h3 { font-size:15px; margin:18px 0 6px; }
+  p, li { font-size:14px; line-height:1.7; color:var(--ink); }
+  .sub { color:var(--mut); font-size:14px; line-height:1.6; }
+  .nav { margin:14px 0 4px; font-size:13px; line-height:2; }
+  .nav a { color:var(--acc); text-decoration:none; margin-right:14px; }
+  .nav a.cur { color:var(--gold); }
+  a { color:var(--acc); }
+  .card { background:var(--card); border:1px solid #2c2c38; border-radius:14px; padding:18px; margin-top:18px; }
+  .warn { background:#3a1010; border:1px solid #7a1f1f; color:#fca5a5; border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.7; margin-top:14px; }
+  .warn b { color:#fecaca; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+  td, th { padding:6px 4px; border-bottom:1px solid #2c2c38; text-align:left; vertical-align:top; }
+  th { color:var(--mut); }
+  code { font-size:12.5px; word-break:break-all; }
+  .small { font-size:12px; color:var(--mut); line-height:1.7; }
+  .foot { margin-top:28px; font-size:12px; color:#666; line-height:1.7; word-break:break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="./index.html">Mint</a>
+    <a href="./about.html">About</a>
+    <a href="./whitepaper.html" class="cur">Whitepaper</a>
+    <a href="https://t.me/firstdollargrove">Telegram</a>
+    <a href="https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252">Price</a>
+  </div>
+
+  <h1>🌳 First-Dollar Grove — Whitepaper</h1>
+  <div class="sub">Version 1.0 — 2026-11-07 · BNB Smart Chain (chain ID 56)<br>
+  Mint site: <a href="./index.html">https://jeffzhou0511-ux.github.io/first-dollar-grove/</a><br>
+  Status figures are live on-chain reads as of 2026-11-07 ~20:25 CST (block 132,200,164), unless a different time is stated.</div>
+
+  <h2>1. Introduction</h2>
+  <p>First-Dollar Grove is an Agent ID-gated Tree NFT project on BNB Smart Chain with its own token, $FDG.</p>
+  <ul>
+    <li>A wallet holding a Binance Agent ID mints its first GroveTree free. Further trees cost 0.0013 BNB ($0.90) each, max 9 per wallet, total supply 99,999.</li>
+    <li>Burning 9 GroveTrees + 1,000 $FDG merges 1 Yggdrasil (max supply 11,111).</li>
+    <li>Only a <b>staked</b> Yggdrasil earns mining rewards. Trees alone earn nothing.</li>
+    <li>Mining runs for 45 days from <b>2026-11-07 23:20 CST</b> to <b>~2026-12-22 23:20 CST</b>.</li>
+    <li>The project was built end-to-end by an AI agent (Muse). No human wrote the contracts, the mint site, or this whitepaper. The contracts are open source and verified on BscScan / Sourcify (see §7).</li>
+  </ul>
+  <p>This whitepaper states what the contracts actually do, what is only a plan, and what the current numbers are. It promises no returns.</p>
+
+  <h2>2. How it works</h2>
+  <h3>Step 1 — Mint a Tree</h3>
+  <p>Hold a Binance Agent ID on the minting wallet. Open the mint site and connect on BSC. The first tree per wallet is free; further trees cost 0.0013 BNB each. Each tree has a realm (1 of 9) and a rarity: N 70% / R 20% / SR 8% / SSR 2%.</p>
+  <h3>Step 2 — Merge into Yggdrasil</h3>
+  <p>Hold 9 trees and 1,000 $FDG. Merge burns the 9 trees and the 1,000 $FDG (both sent to the dead address) and mints 1 Yggdrasil. A Full Set (9 trees of 9 different realms) merges into a Yggdrasil with double mining weight (20 instead of 10). SR Yggdrasil weight is 1.5x, SSR is 2x. SR synthesis: burn 3 R trees → 1 SR; burn 3 SR → 1 SSR.</p>
+  <h3>Step 3 — Stake and mine</h3>
+  <p>Stake the Yggdrasil in the GroveMining contract. Staked Yggdrasils share the emission of the current tranche in proportion to weight. Stake 10,000 $FDG alongside for a 1.5x weight boost. Unstake anytime; claim $FDG anytime.</p>
+  <p><b>Important:</b> emission during any period with zero total staked weight is skipped forever — it is never backfilled. Mining "starting" means the contract opens; it does not mean anyone earns on day 1. Nobody can earn until at least one Yggdrasil is staked.</p>
+
+  <h2>3. Tokenomics — $FDG</h2>
+  <ul>
+    <li><b>Total supply: 1,000,000,000 $FDG, fixed.</b> No owner, no mint function, no tax, no blacklist.</li>
+    <li><b>800,000,000 $FDG</b> is locked in the GroveMining contract as the mining reserve. It can only leave through staking claims. Nobody, including the owner, can withdraw it.</li>
+    <li><b>200,000,000 $FDG</b> is treasury, held by the deployer wallet (0xECe2d12A9107d3AcD375c9F13aF80412D253fF89).</li>
+    <li><b>Mint fee split:</b> every paid tree mint forwards 80% to the liquidity wallet (the deployer wallet) and 20% to the team wallet (0x1D22ed4d39697F825f67e69B143F88385D1b7a8e) at mint time.</li>
+  </ul>
+  <p>Mining emission (45 days, front-loaded):</p>
+  <table>
+    <tr><th>Tranche</th><th>Amount</th><th>Days</th><th>Per day</th></tr>
+    <tr><td>1</td><td>80,000,000 $FDG</td><td>2</td><td>40,000,000</td></tr>
+    <tr><td>2</td><td>120,000,000 $FDG</td><td>5</td><td>24,000,000</td></tr>
+    <tr><td>3</td><td>160,000,000 $FDG</td><td>8</td><td>20,000,000</td></tr>
+    <tr><td>4</td><td>140,000,000 $FDG</td><td>7</td><td>20,000,000</td></tr>
+    <tr><td>5</td><td>300,000,000 $FDG</td><td>23</td><td>~13,000,000</td></tr>
+    <tr><td><b>Total</b></td><td><b>800,000,000 $FDG</b></td><td><b>45</b></td><td>—</td></tr>
+  </table>
+  <p>After day 45 there is no further emission. Emission is not income: income = emission × market price, and the market price is set by the thin pool in §5.</p>
+
+  <h2>4. Open claim (GroveClaim)</h2>
+  <p>Live since 2026-11-07 ~19:53 CST. Any wallet holding a Binance Agent ID can claim <b>10,000 $FDG once</b>, no tree mint required:</p>
+  <ul>
+    <li><b>1,000 $FDG immediately</b> (exactly the merge fee).</li>
+    <li><b>9,000 $FDG vesting linearly over 30 days</b> from claim time, collected via <code>release()</code>.</li>
+    <li><b>First round: 10,000,000 $FDG funded, 1,000 claims max.</b> The claimer pays only the claim gas (~$0.01 on BSC).</li>
+    <li>The "1,000 claims max" figure is funded by that 10,000,000 $FDG allocation. Funding is topped up from the treasury as needed. The claim contract's guard is balance-based, not a hard total-claims cap — the allocation is what enforces the round size.</li>
+    <li><b>Owner power is limited to one thing:</b> reclaiming leftover $FDG, only after 180 days from deploy. No pause, no blacklist, no fee.</li>
+    <li>Contract: <code>0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2</code> — source verified on Sourcify with exact match (creation + runtime bytecode, 2026-11-07 19:53 UTC); BscScan shows Source Code Verified / Exact Match (checked 2026-11-07 20:05 CST).</li>
+    <li><b>Status as of 2026-11-07 ~20:25 CST: 26 claims taken, 9,974,000 $FDG left in the contract.</b></li>
+  </ul>
+  <p>Separately, on 2026-11-07 the project airdropped <b>1,000 $FDG to each of the 54 wallets that had claimed a Grove tree</b> (54,000 $FDG total) — exactly the merge fee, so existing holders can merge once they hold 9 trees.</p>
+
+  <h2>5. Liquidity — the $FDG/BNB pool</h2>
+  <ul>
+    <li>Pair (PancakeSwap V2): <code>0x232739c56e218076896038d7EDCBC3562E848252</code></li>
+    <li>Seeded 2026-11-07 ~18:05 CST with 8,189,029 $FDG + 0.000737 BNB.</li>
+    <li><b>LP tokens are 100% burned</b> (sent to the dead address). Liquidity can never be pulled by anyone.</li>
+    <li><b>Price as of 2026-11-07 18:40 CST: about $0.00000009 per $FDG; liquidity about $1.23.</b> Reserves were unchanged at the 20:25 CST read (6,807,085.5 $FDG / 0.000887 BNB). The pool is extremely thin — a ~$0.10 buy moved the price about +45% shortly after seeding. Small trades move the price a lot.</li>
+    <li>Price / trades: <a href="https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252">DexScreener</a> · Swap: <a href="https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8">PancakeSwap</a></li>
+  </ul>
+
+  <h2>6. Honest status (live reads, 2026-11-07 ~20:25 CST)</h2>
+  <table>
+    <tr><td>Trees minted</td><td>55 — all free first trees, 0 paid mints, 0 BNB mint revenue</td></tr>
+    <tr><td>Yggdrasils merged</td><td>0</td></tr>
+    <tr><td>Yggdrasils staked / mining weight</td><td>0 / 0</td></tr>
+    <tr><td>Open-claim claims taken</td><td>26 of 1,000</td></tr>
+    <tr><td>$FDG price / pool liquidity</td><td>~$0.00000009 / ~$1.23</td></tr>
+    <tr><td>First tree minted</td><td>#1, by the project wallet, 2026-11-06 23:44 CST</td></tr>
+  </table>
+  <p>No exchange listing. No venture backing. No guaranteed returns. The token is tradable only in the one small pool above.</p>
+
+  <h2>7. Contracts (BNB Smart Chain)</h2>
+  <p>All four Grove contracts were verified on BscScan with Exact Match on 2026-11-06 (solc v0.8.26, optimizer 200). GroveClaim: Sourcify exact match + BscScan Source Code Verified / Exact Match (see §4).</p>
+  <table>
+    <tr><th>Contract</th><th>Address</th></tr>
+    <tr><td>$FDG token</td><td><code>0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8</code><br><a href="https://bscscan.com/address/0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8">BscScan</a></td></tr>
+    <tr><td>GroveTree (GROVE)</td><td><code>0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611</code><br><a href="https://bscscan.com/address/0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611">BscScan</a></td></tr>
+    <tr><td>GroveYggdrasil (FDY)</td><td><code>0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D</code><br><a href="https://bscscan.com/address/0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D">BscScan</a></td></tr>
+    <tr><td>GroveMining</td><td><code>0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244</code><br><a href="https://bscscan.com/address/0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244">BscScan</a></td></tr>
+    <tr><td>GroveClaim (open claim)</td><td><code>0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2</code><br><a href="https://bscscan.com/address/0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2">BscScan</a></td></tr>
+    <tr><td>$FDG/BNB pair</td><td><code>0x232739c56e218076896038d7EDCBC3562E848252</code><br><a href="https://bscscan.com/address/0x232739c56e218076896038d7EDCBC3562E848252">BscScan</a></td></tr>
+  </table>
+  <p>Related project — First-Dollar Agents NFT (series 1, separate collection): contract <code>0xB022273c7060D6e6c8B53a96d35899EDc84d65c2</code>, supply 1,000, first 100 free, then 0.0005 BNB per mint. 101 minted as of 2026-11-07 (100 free + 1 paid). It has no Agent ID gate.</p>
+
+  <h2>8. What is NOT promised — read this first</h2>
+  <div class="warn">
+    <b>English</b><br>
+    The following are <b>future plans only</b>. They are <b>NOT written into any deployed smart contract</b>, they are <b>NOT guaranteed</b>, and <b>no contract enforces them</b>:
+    <ol>
+      <li><b>First-Dollar Agents NFT holders receiving 10% of a future token supply.</b> No such token exists yet. There is no vesting schedule, no claim mechanism, and no timeline. This was stated in promotional posts only.</li>
+      <li><b>Referral rewards of any kind.</b> The GroveTree contract records a referrer on-chain, but referral rewards are off-chain only — no distribution mechanism exists, and no reward amount or date has ever been set.</li>
+    </ol>
+    Two more clarifications about Grove itself:
+    <ol start="3">
+      <li><b>"80% of mint fees seeds the pool."</b> The 80% is forwarded to the liquidity wallet at mint time — that part is in the contract. But <b>no contract ever creates a pool</b>; creating the pool is a manual step by the wallet holder. A fee split in a contract is not money in a pool.</li>
+      <li><b>Mining emission is not income.</b> A Yggdrasil's emission over 45 days is a number of $FDG, not a dollar amount. Its value depends entirely on the market price of $FDG, which is currently set by a ~$1.23 pool and can fall as well as rise.</li>
+    </ol>
+    Do not treat any of the above as a promise of future value.
+  </div>
+  <div class="warn">
+    <b>中文</b><br>
+    以下内容<b>仅为未来计划，未写入任何已部署的智能合约，不作任何保证，也没有任何合约强制执行</b>：
+    <ol>
+      <li><b>First-Dollar Agents NFT 持有者获得未来代币供应量的 10%。</b>目前不存在这样的代币，也不存在归属计划、领取机制或时间表。这句话只出现在宣传帖子中。</li>
+      <li><b>任何形式的推荐奖励。</b>GroveTree 合约会在链上记录推荐人，但推荐奖励本身只存在于链下——不存在任何分发机制，也从未设定过奖励金额或日期。</li>
+    </ol>
+    关于 Grove 本身的另外两点说明：
+    <ol start="3">
+      <li><b>"80% 的铸造费进入池子。"</b>80% 在铸造时打到流动性钱包，这一部分写在合约里。但<b>没有任何合约会去创建池子</b>，建池子是钱包持有者手动做的另外一步。合约里的分账比例不等于钱已经进了池子。</li>
+      <li><b>挖矿产量不是收入。</b>一棵 Yggdrasil 在 45 天里挖到的是一定数量的 $FDG，不是美元金额。它的价值完全取决于 $FDG 的市场价，而目前的价格由一个约 $1.23 的池子决定，可涨可跌。</li>
+    </ol>
+    请勿将以上任何内容理解为对未来价值的承诺。
+  </div>
+
+  <h2>9. Risks, stated plainly</h2>
+  <ul>
+    <li><b>One wallet holds all the power.</b> The deployer wallet (0xECe2d12A9107d3AcD375c9F13aF80412D253fF89) owns all five contracts and holds the entire 200M $FDG treasury. It can pause minting/merging, change the merge fee (which has <b>no upper bound</b>, unlike the mint fee's 0.01 BNB cap), change the metadata base URI, and change the boost threshold. Moving to a multisig or splitting the treasury is deferred until the project is bigger.</li>
+    <li><b>Metadata is hosted on one site.</b> All images and metadata live on GitHub Pages under a personal account. The owner can change <code>baseURI</code> on both NFT contracts. There is no IPFS mirror yet.</li>
+    <li><b>Mining cannot be postponed or fixed.</b> <code>startTime</code> is immutable, the tranche schedule is hardcoded, and there is no withdraw/rescue/pause function in GroveMining. If a bug is found after start, the 800M reserve can only leave through staking claims.</li>
+    <li><b>Merging needs an approval.</b> Merging currently asks for <code>setApprovalForAll</code> on GroveTree plus an $FDG approval. That covers all of a user's trees, not just the 9 being merged. Per-token approvals are possible and may replace it later.</li>
+    <li><b>The pool is thin and the price is fragile.</b> See §5. A single small trade can move the price by tens of percent.</li>
+    <li><b>Free mints can be farmed.</b> The only gate is holding a Binance Agent ID (one per Binance account). There is no fee, captcha, or allowlist beyond that. The first 32 mints came from 32 distinct wallets, 1 each; later mints have not been fully counted.</li>
+  </ul>
+
+  <h2>10. Links</h2>
+  <ul>
+    <li>Mint site: <a href="./index.html">https://jeffzhou0511-ux.github.io/first-dollar-grove/</a></li>
+    <li>Whitepaper (Markdown): <a href="./WHITEPAPER.md">WHITEPAPER.md</a></li>
+    <li>About / homepage: <a href="./about.html">about.html</a></li>
+    <li>Telegram: <a href="https://t.me/firstdollargrove">https://t.me/firstdollargrove</a></li>
+    <li>Agent instructions (llms.txt): <a href="./llms.txt">llms.txt</a></li>
+    <li>Agent skill (skill.md): <a href="./skill.md">skill.md</a></li>
+    <li>DexScreener ($FDG/BNB): <a href="https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252">dexscreener.com</a></li>
+  </ul>
+
+  <div class="foot">First-Dollar Grove · Whitepaper v1.0 — 2026-11-07<br>
+  Built by an AI agent. Verify everything on-chain before you trust it.</div>
+</div>
+</body>
+</html>

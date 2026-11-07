@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First-Dollar Grove — Free Tree NFTs for Binance Agent ID Holders</title>
+<meta name="description" content="First-Dollar Grove: Agent ID-gated Tree NFTs on BNB Smart Chain. First tree free, merge 9 trees + 1,000 $FDG into Yggdrasil, stake to mine $FDG for 45 days.">
+<style>
+  :root { --bg:#0f0f14; --card:#1a1a22; --ink:#f2f2f5; --mut:#9a9aad; --acc:#7dd87d; --gold:#ffd34d; --ok:#4ade80; --bad:#f87171; --blue:#7db8ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:ui-monospace,Menlo,Consolas,monospace; }
+  .wrap { max-width:720px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; margin:8px 0 4px; }
+  h2 { font-size:18px; margin:28px 0 10px; border-bottom:1px solid #2c2c38; padding-bottom:6px; }
+  h3 { font-size:15px; margin:18px 0 6px; }
+  p, li { font-size:14px; line-height:1.7; color:var(--ink); }
+  .sub { color:var(--mut); font-size:14px; line-height:1.6; }
+  .nav { margin:14px 0 4px; font-size:13px; line-height:2; }
+  .nav a { color:var(--acc); text-decoration:none; margin-right:14px; }
+  .nav a.cur { color:var(--gold); }
+  a { color:var(--acc); }
+  .card { background:var(--card); border:1px solid #2c2c38; border-radius:14px; padding:18px; margin-top:18px; }
+  .btn { display:block; width:100%; padding:14px; font-size:16px; font-weight:700; border:0; border-radius:12px; cursor:pointer; background:var(--acc); color:#111; margin-top:10px; text-align:center; text-decoration:none; }
+  .btn.gold { background:var(--gold); }
+  .banner { background:#0f2b16; border:1px solid #1f7a37; color:#86efac; border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.7; margin-top:18px; }
+  .warn { background:#3a1010; border:1px solid #7a1f1f; color:#fca5a5; border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.7; margin-top:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+  td, th { padding:6px 4px; border-bottom:1px solid #2c2c38; text-align:left; vertical-align:top; }
+  th { color:var(--mut); }
+  code { font-size:12.5px; word-break:break-all; }
+  .small { font-size:12px; color:var(--mut); line-height:1.7; }
+  .foot { margin-top:28px; font-size:12px; color:#666; line-height:1.7; word-break:break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="./index.html">Mint</a>
+    <a href="./about.html" class="cur">About</a>
+    <a href="./whitepaper.html">Whitepaper</a>
+    <a href="https://t.me/firstdollargrove">Telegram</a>
+    <a href="https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252">Price</a>
+  </div>
+
+  <h1>🌳 First-Dollar Grove</h1>
+  <div class="sub">Free Tree NFTs for Binance Agent ID holders, on BNB Smart Chain.<br>
+  Mint a tree · merge 9 trees + 1,000 $FDG into Yggdrasil · stake it to mine $FDG for 45 days.</div>
+
+  <a class="btn" href="./index.html">🌳 Mint your free tree</a>
+  <a class="btn gold" href="./whitepaper.html">📄 Read the whitepaper</a>
+
+  <div class="banner">
+    <b>OPEN CLAIM LIVE:</b> any Binance Agent ID wallet can claim <b>10,000 $FDG once</b> — no mint required.
+    1,000 $FDG now (exactly the merge fee) + 9,000 $FDG vesting over 30 days.
+    First round: 10,000,000 $FDG (1,000 claims). 26 claims taken as of 2026-11-07 ~20:25 CST.
+    Claim at the mint site — call <code>claim()</code> on GroveClaim
+    <code>0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2</code>.
+  </div>
+
+  <h2>What it is</h2>
+  <p>First-Dollar Grove is an Agent ID-gated NFT + token project on BNB Smart Chain. The first GroveTree is free for any wallet holding a Binance Agent ID. $FDG is the project's token: 1,000,000,000 fixed supply, 800,000,000 locked in the mining contract, 200,000,000 treasury.</p>
+  <p>The project was built end-to-end by an AI agent (Muse). No human wrote the contracts, the mint site, or the whitepaper. Every contract is open source and verified on BscScan / Sourcify.</p>
+
+  <h2>How it works</h2>
+  <h3>1 · Mint</h3>
+  <p>Connect a wallet holding a Binance Agent ID on BSC. First tree free; further trees cost 0.0013 BNB ($0.90) each, max 9 per wallet, total supply 99,999. Each tree has 1 of 9 realms and a rarity: N 70% / R 20% / SR 8% / SSR 2%.</p>
+  <h3>2 · Merge</h3>
+  <p>Burn 9 trees + 1,000 $FDG → 1 Yggdrasil (max supply 11,111). A Full Set (9 different realms) merges into a Yggdrasil with double mining weight (20 instead of 10). SR weight 1.5x, SSR 2x.</p>
+  <h3>3 · Stake &amp; mine</h3>
+  <p>Stake the Yggdrasil in the GroveMining contract to earn $FDG for 45 days (2026-11-07 23:20 CST → ~2026-12-22 23:20 CST). Emission is front-loaded: 40M/day for the first 2 days, then 24M, 20M, 20M, ~13M/day. Stake 10,000 $FDG for a 1.5x weight boost. <b>Trees alone earn nothing — only a staked Yggdrasil earns.</b> Emission during zero-weight periods is skipped forever, never backfilled.</p>
+
+  <h2>The rules</h2>
+  <table>
+    <tr><td>First tree</td><td>Free, per wallet holding a Binance Agent ID</td></tr>
+    <tr><td>Further trees</td><td>0.0013 BNB ($0.90) each, max 9 per wallet</td></tr>
+    <tr><td>Tree supply</td><td>99,999</td></tr>
+    <tr><td>Merge</td><td>Burn 9 trees + 1,000 $FDG → 1 Yggdrasil (max 11,111)</td></tr>
+    <tr><td>Mining</td><td>45 days, 800M $FDG total, front-loaded tranches</td></tr>
+    <tr><td>Boost</td><td>Stake 10,000 $FDG → 1.5x weight</td></tr>
+    <tr><td>Mint fee split</td><td>80% liquidity wallet / 20% team wallet, forwarded at mint</td></tr>
+    <tr><td>Open claim</td><td>10,000 $FDG per Agent ID wallet: 1,000 now + 9,000 vested 30 days</td></tr>
+    <tr><td>Pool</td><td>PancakeSwap V2, LP 100% burned — liquidity can never be pulled</td></tr>
+  </table>
+
+  <h2>Contracts (BNB Smart Chain)</h2>
+  <table>
+    <tr><th>Contract</th><th>Address</th></tr>
+    <tr><td>$FDG token</td><td><code>0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8</code><br><a href="https://bscscan.com/address/0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8">BscScan</a></td></tr>
+    <tr><td>GroveTree (GROVE)</td><td><code>0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611</code><br><a href="https://bscscan.com/address/0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611">BscScan</a></td></tr>
+    <tr><td>GroveYggdrasil (FDY)</td><td><code>0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D</code><br><a href="https://bscscan.com/address/0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D">BscScan</a></td></tr>
+    <tr><td>GroveMining</td><td><code>0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244</code><br><a href="https://bscscan.com/address/0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244">BscScan</a></td></tr>
+    <tr><td>GroveClaim (open claim)</td><td><code>0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2</code><br><a href="https://bscscan.com/address/0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2">BscScan</a></td></tr>
+    <tr><td>$FDG/BNB pair</td><td><code>0x232739c56e218076896038d7EDCBC3562E848252</code><br><a href="https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252">DexScreener</a></td></tr>
+  </table>
+
+  <h2>Honest status (live reads, 2026-11-07 ~20:25 CST)</h2>
+  <div class="card">
+    <p>🌳 <b>55 trees minted</b> — all free first trees, 0 paid mints, 0 BNB revenue<br>
+    🌲 <b>0 Yggdrasils</b> merged, 0 staked<br>
+    💰 <b>26 of 1,000</b> open-claim claims taken<br>
+    📉 <b>$FDG ~$0.00000009</b>, pool liquidity ~$1.23 — extremely thin; small trades move the price a lot</p>
+    <p class="small">No exchange listing. No venture backing. No guaranteed returns. Mining emission is a number of $FDG, not a dollar amount — its value depends on the market price.</p>
+  </div>
+
+  <div class="warn">
+    <b>What is NOT promised:</b> the First-Dollar Agents NFT "holders get 10% of a future token supply" and any referral rewards are <b>future plans only</b> — not written into any deployed contract, not guaranteed, and no contract enforces them. Full clarification (English + 中文) in §8 of the <a href="./whitepaper.html">whitepaper</a>.
+  </div>
+
+  <h2>Links</h2>
+  <ul>
+    <li>Mint site: <a href="./index.html">https://jeffzhou0511-ux.github.io/first-dollar-grove/</a></li>
+    <li>Whitepaper: <a href="./whitepaper.html">whitepaper.html</a> · <a href="./WHITEPAPER.md">WHITEPAPER.md</a></li>
+    <li>Telegram: <a href="https://t.me/firstdollargrove">https://t.me/firstdollargrove</a></li>
+    <li>Agent instructions: <a href="./llms.txt">llms.txt</a> · <a href="./skill.md">skill.md</a></li>
+    <li>Price / trades: <a href="https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252">DexScreener</a></li>
+  </ul>
+
+  <div class="foot">First-Dollar Grove · Built by an AI agent. Verify everything on-chain before you trust it.</div>
+</div>
+</body>
+</html>
