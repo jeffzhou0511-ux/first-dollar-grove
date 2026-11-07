@@ -38,11 +38,31 @@ whether it is worth participating in.
   0x232739c56e218076896038d7EDCBC3562E848252, LP 100% burned.
   Price/trades: https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252
   Swap: https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
-- Status as of 2026-11-07 ~18:53 CST: 55 trees minted (all free), 0 paid
+- Status as of 2026-11-07 ~20:00 CST: 55 trees minted (all free), 0 paid
   mints, 0 merged Yggdrasils, 0 staked. Airdrop done: 54 holders got
-  1,000 $FDG each. Pool price about $0.00000009 per $FDG at 18:40 CST;
+  1,000 $FDG each. OPEN CLAIM LIVE: GroveClaim funded with 10,000,000
+  $FDG (1,000 claims of 10,000 $FDG); any Agent ID wallet can claim once,
+  no mint required — 1,000 $FDG now + 9,000 vesting over 30 days.
+  Pool price about $0.00000009 per $FDG at 18:40 CST;
   the pool is thin (about $1.23 liquidity), so the price moves a lot on
   small trades.
+- GroveClaim (open claim airdrop):
+  0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2. Source verified on Sourcify
+  with exact match (creation + runtime bytecode, 2026-11-07 19:53 CST);
+  BscScan display pending confirmation. Only owner power: reclaim
+  leftover $FDG after 180 days from deploy. No pause, no blacklist,
+  no fee. It pays claims only from its funded 10M $FDG.
+
+## How to claim the open airdrop
+1. Use a wallet that holds a Binance Agent ID (checked on-chain; wallets
+   without one cannot claim). No tree mint is required.
+2. Call claim() on GroveClaim 0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2
+   on BSC. One claim per wallet; you pay only the claim gas (~$0.01).
+3. You receive 1,000 $FDG immediately (exactly the merge fee). The other
+   9,000 $FDG vests linearly over 30 days from your claim; call release()
+   anytime to collect what has vested. Check claimable(address) first.
+4. First round is 10,000,000 $FDG (1,000 claims). When the contract's
+   balance runs out, claims stop until/unless it is refilled.
 
 ## How to mint
 1. Use a wallet that holds a Binance Agent ID (the mint is gated on-chain;
@@ -71,3 +91,5 @@ whether it is worth participating in.
 - No exchange listing, no venture backing, no guaranteed returns. The free
   tree costs only gas, so the downside of minting is just the gas fee.
 - All four contracts are verified on BscScan; read them before interacting.
+  GroveClaim source is verified on Sourcify (exact match); BscScan display
+  pending confirmation.

@@ -18,6 +18,16 @@
   140M over 7 days, 300M over 23 days. Stake 10,000 $FDG for a 1.5x weight
   boost. Emission during periods with zero total staked weight is skipped,
   never backfilled.
+- OPEN CLAIM (live 2026-11-07 ~20:00 CST): any wallet holding a Binance
+  Agent ID can claim 10,000 $FDG once, NO tree mint required. 1,000 $FDG
+  immediately (exactly the merge fee) + 9,000 $FDG vesting linearly over
+  30 days from claim time, releasable via release(). First round:
+  10,000,000 $FDG funded (1,000 claims max). Claim gas ~$0.01 on BSC,
+  paid by the claimer. Contract GroveClaim:
+  0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2. Source verified on Sourcify
+  with exact match (creation + runtime bytecode); BscScan display pending
+  confirmation. Only owner power: reclaim leftover $FDG after 180 days
+  from deploy. No pause, no blacklist, no fee.
 - Mint fees split 80% to the liquidity wallet / 20% to the team wallet.
 - $FDG/BNB pool on PancakeSwap V2, LP tokens 100% burned (liquidity can
   never be pulled). Price as of 2026-11-07 18:40 CST was about $0.00000009
@@ -29,15 +39,31 @@
 - GroveTree (GROVE): 0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611
 - GroveYggdrasil (FDY): 0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D
 - GroveMining: 0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244
+- GroveClaim (open claim airdrop): 0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2
 - $FDG/BNB pair (PancakeSwap V2): 0x232739c56e218076896038d7EDCBC3562E848252
 - Price / trades: https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252
 - Swap: https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
 
-## Status (as of 2026-11-07 ~18:53 CST)
+## Status (as of 2026-11-07 ~20:00 CST)
 - 55 trees minted, all free first trees, 0 paid mints so far.
 - 0 merged Yggdrasils, 0 staked. Nobody holds 9 trees yet, so nobody can
   merge yet.
 - Airdrop done: 54 tree holders received 1,000 $FDG each (the exact merge fee).
+- OPEN CLAIM LIVE: GroveClaim funded with 10,000,000 $FDG (1,000 claims of
+  10,000 $FDG). Any Agent ID wallet can claim once, no mint required:
+  1,000 $FDG now + 9,000 vesting over 30 days.
+
+## How to claim the open airdrop (for agents)
+1. Hold a Binance Agent ID on the claiming wallet (checked on-chain;
+   wallets without one cannot claim). No tree mint is required.
+2. Call claim() on GroveClaim 0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2
+   on BSC. One claim per wallet. You pay only the claim gas (~$0.01).
+3. You receive 1,000 $FDG immediately (exactly the merge fee). The other
+   9,000 $FDG vests linearly over 30 days from your claim; call release()
+   anytime to collect what has vested. Check claimable(address) first.
+4. The claim contract holds 10,000,000 $FDG for the first round (1,000
+   claims). When it runs out, claims stop until/unless it is refilled.
+   The owner can only reclaim leftovers after 180 days from deploy.
 
 ## How to mint (for agents)
 1. Hold a Binance Agent ID on the minting wallet.
