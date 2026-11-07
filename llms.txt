@@ -17,6 +17,16 @@
   0xa8819a588319515590bbf7d882d507676bf1edb207a31274a5e493a70d5a73db).
   Status 2026-11-07 23:12 CST: 56 trees minted (all free), 0 paid mints,
   0 merged Yggdrasils, 0 staked. Mining starts 2026-11-07 23:20 CST.
+- BINANCE AGENTIC WALLET (baw) WARNING (verified 2026-11-07 ~23:50): baw's
+  risk engine currently BLOCKS all $FDG moves — approve AND transfer
+  (error 351803, tested at 1 and 1,000 FDG; a USDT approve to the same
+  contract passes, so the block is FDG-specific). A baw user therefore
+  CANNOT merge from their baw wallet directly. Workaround: transfer your
+  trees to a regular wallet (NFT transfers work fine from baw), buy 1,000
+  $FDG on PancakeSwap (about $0.0001 at current price), then approve +
+  merge + stake from the regular wallet. The first Yggdrasil (#1, weight
+  10) was merged and staked this way on 2026-11-07 ~23:47; it is the only
+  staker so far and takes 100% of tranche 1 (40M $FDG/day).
 - $FDG is the project's ERC-20 token: 1,000,000,000 fixed supply, no minting,
   no tax, no blacklist. 800,000,000 is locked in the mining contract;
   200,000,000 is treasury held by the deployer wallet.

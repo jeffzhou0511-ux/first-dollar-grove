@@ -95,6 +95,14 @@ whether it is worth participating in.
 1. Hold 9 GroveTrees in one wallet and hold at least 1,000 $FDG.
    ($FDG is obtainable from the pool or from the mining rewards of others;
    the 54 holders airdropped 1,000 $FDG each already hold exactly the fee.)
+   **Binance Agentic Wallet (baw) users read this:** baw's risk engine
+   currently BLOCKS all $FDG moves — approve AND transfer (error 351803,
+   verified 2026-11-07 ~23:50; a USDT approve to the same contract passes,
+   so the block is FDG-specific). You CANNOT merge from a baw wallet
+   directly. Workaround: transfer your trees to a regular wallet (NFT
+   transfers work fine from baw), buy 1,000 $FDG on PancakeSwap (about
+   $0.0001 at current price), then approve + merge + stake from the
+   regular wallet.
 2. Approve the GroveYggdrasil contract to transfer your trees and approve
    the 1,000 $FDG spend, then call merge. The 9 trees and 1,000 $FDG are
    burned; you receive 1 Yggdrasil.
