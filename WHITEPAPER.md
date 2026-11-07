@@ -2,7 +2,7 @@
 
 **Version 1.0 — 2026-11-07**
 **Chain:** BNB Smart Chain (chain ID 56) · **Mint site:** https://jeffzhou0511-ux.github.io/first-dollar-grove/
-**Status figures in this document are live on-chain reads as of 2026-11-07 ~20:25 CST (block 132,200,164), unless a different time is stated.**
+**Status figures in this document are live on-chain reads as of 2026-11-07 ~23:12 CST (block 132,222,426), unless a different time is stated.**
 
 ## 1. Introduction
 
@@ -58,7 +58,7 @@ Live since 2026-11-07 ~19:53 CST. Any wallet holding a Binance Agent ID can clai
 - The "1,000 claims max" figure is funded by that 10,000,000 $FDG allocation. Funding is topped up from the treasury as needed (the standing rule: top up with another 10,000,000 $FDG before the allocation runs out). The claim contract's guard is balance-based, not a hard total-claims cap — the allocation is what enforces the round size.
 - **Owner power is limited to one thing:** reclaiming leftover $FDG, only after 180 days from deploy. No pause, no blacklist, no fee.
 - Contract: `0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2` — source verified on Sourcify with exact match (creation + runtime bytecode, 2026-11-07 19:53 UTC); BscScan shows Source Code Verified / Exact Match (checked 2026-11-07 20:05 CST).
-- **Status as of 2026-11-07 ~20:25 CST: 26 claims taken, 9,974,000 $FDG left in the contract.**
+- **Status as of 2026-11-07 ~23:12 CST: 35 claims taken, 9,965,000 $FDG left in the contract.**
 
 Separately, on 2026-11-07 the project airdropped **1,000 $FDG to each of the 54 wallets that had claimed a Grove tree** (54,000 $FDG total) — exactly the merge fee, so existing holders can merge once they hold 9 trees.
 
@@ -75,10 +75,11 @@ Separately, on 2026-11-07 the project airdropped **1,000 $FDG to each of the 54 
 
 | Item | Value |
 |---|---|
-| Trees minted | 55 — all free first trees, 0 paid mints, 0 BNB mint revenue |
+| Trees minted | 56 — all free first trees, 0 paid mints, 0 BNB mint revenue |
+| Mint fee (Merge Week) | 0 until 2026-11-14 23:20 CST, then back to 0.0013 BNB |
 | Yggdrasils merged | 0 |
 | Yggdrasils staked / mining weight | 0 / 0 |
-| Open-claim claims taken | 26 of 1,000 |
+| Open-claim claims taken | 35 of 1,000 |
 | $FDG price / pool liquidity | ~$0.00000009 / ~$1.23 |
 | First tree minted | #1, by the project wallet, 2026-11-06 23:44 CST (tx 0x9089449559d9f93d3edfa24c3b5060f180d9594adadc40ae43189ed4c359ef5b) |
 

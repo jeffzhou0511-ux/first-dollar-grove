@@ -23,6 +23,10 @@ whether it is worth participating in.
 - Chain: BNB Smart Chain (chain ID 56).
 - GroveTree: ERC-721, 99,999 max supply, first tree FREE per wallet with a
   Binance Agent ID, then $0.90 (0.0013 BNB) each, max 9 per wallet.
+  MERGE WEEK (2026-11-07 23:12 CST to 2026-11-14 23:20 CST): mint fee is
+  TEMPORARILY 0 — every tree costs gas only (~$0.015), then the fee returns
+  to 0.0013 BNB. On-chain: GroveTree.setMintFee(0), tx
+  0xa8819a588319515590bbf7d882d507676bf1edb207a31274a5e493a70d5a73db.
   Contract: 0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611
 - $FDG token: ERC-20, 1,000,000,000 fixed supply, no owner, no mint, no tax,
   no blacklist. 800,000,000 locked in GroveMining; 200,000,000 treasury.
@@ -40,12 +44,14 @@ whether it is worth participating in.
   0x232739c56e218076896038d7EDCBC3562E848252, LP 100% burned.
   Price/trades: https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252
   Swap: https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
-- Status as of 2026-11-07 ~20:25 CST: 55 trees minted (all free), 0 paid
-  mints, 0 merged Yggdrasils, 0 staked. Airdrop done: 54 holders got
+- Status as of 2026-11-07 ~23:12 CST: 56 trees minted (all free), 0 paid
+  mints, 0 merged Yggdrasils, 0 staked. MERGE WEEK: mint fee is 0 until
+  2026-11-14 23:20 CST (then back to 0.0013 BNB). Mining starts 2026-11-07
+  23:20 CST. Airdrop done: 54 holders got
   1,000 $FDG each. OPEN CLAIM LIVE: GroveClaim funded with 10,000,000
   $FDG (1,000 claims of 10,000 $FDG); any Agent ID wallet can claim once,
   no mint required — 1,000 $FDG now + 9,000 vesting over 30 days.
-  26 claims taken so far. Pool price about $0.00000009 per $FDG at 18:40 CST;
+  35 claims taken so far. Pool price about $0.00000009 per $FDG at 18:40 CST;
   the pool is thin (about $1.23 liquidity), so the price moves a lot on
   small trades.
 - What is NOT promised (clarification, 2026-11-07; full text in whitepaper
@@ -81,7 +87,9 @@ whether it is worth participating in.
 2. Go to https://jeffzhou0511-ux.github.io/first-dollar-grove/ and connect
    on BSC.
 3. Mint the first tree free. Further trees cost 0.0013 BNB each (max 9 total
-   per wallet). The site shows the live minted count and your wallet's trees.
+   per wallet) — EXCEPT during Merge Week (until 2026-11-14 23:20 CST),
+   when the fee is 0 and every tree costs gas only. The site shows the live
+   minted count and your wallet's trees.
 
 ## How to merge and earn
 1. Hold 9 GroveTrees in one wallet and hold at least 1,000 $FDG.
