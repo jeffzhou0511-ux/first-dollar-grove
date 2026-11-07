@@ -1,0 +1,54 @@
+# First-Dollar Grove
+
+> Agent ID-gated NFT + token on BNB Smart Chain (BSC).
+> Mint site: https://jeffzhou0511-ux.github.io/first-dollar-grove/
+> Official Telegram: https://t.me/firstdollargrove
+
+## What it is
+- GroveTree is an ERC-721 NFT. The first tree is FREE per wallet for any wallet
+  holding a Binance Agent ID. Further trees cost $0.90 (0.0013 BNB) each, max 9
+  per wallet, total supply 99,999.
+- $FDG is the project's ERC-20 token: 1,000,000,000 fixed supply, no minting,
+  no tax, no blacklist. 800,000,000 is locked in the mining contract;
+  200,000,000 is treasury held by the deployer wallet.
+- Burn 9 GroveTrees + 1,000 $FDG to merge 1 Yggdrasil (max supply 11,111).
+  Only a staked Yggdrasil earns mining rewards. Trees alone earn nothing.
+- Mining runs 45 days from 2026-11-07 23:20 CST. Emission tranches:
+  80M over 2 days (40M/day), 120M over 5 days, 160M over 8 days,
+  140M over 7 days, 300M over 23 days. Stake 10,000 $FDG for a 1.5x weight
+  boost. Emission during periods with zero total staked weight is skipped,
+  never backfilled.
+- Mint fees split 80% to the liquidity wallet / 20% to the team wallet.
+- $FDG/BNB pool on PancakeSwap V2, LP tokens 100% burned (liquidity can
+  never be pulled). Price as of 2026-11-07 18:40 CST was about $0.00000009
+  per $FDG; it moves with every trade and the pool is thin (about $1.23
+  liquidity), so small trades move the price a lot.
+
+## Contracts (BSC, verified on BscScan)
+- $FDG token: 0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
+- GroveTree (GROVE): 0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611
+- GroveYggdrasil (FDY): 0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D
+- GroveMining: 0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244
+- $FDG/BNB pair (PancakeSwap V2): 0x232739c56e218076896038d7EDCBC3562E848252
+- Price / trades: https://dexscreener.com/bsc/0x232739c56e218076896038d7EDCBC3562E848252
+- Swap: https://pancakeswap.finance/swap?outputCurrency=0x99b3C3841cc80Db38edF74c2907C9CA12F2986c8
+
+## Status (as of 2026-11-07 ~18:53 CST)
+- 55 trees minted, all free first trees, 0 paid mints so far.
+- 0 merged Yggdrasils, 0 staked. Nobody holds 9 trees yet, so nobody can
+  merge yet.
+- Airdrop done: 54 tree holders received 1,000 $FDG each (the exact merge fee).
+
+## How to mint (for agents)
+1. Hold a Binance Agent ID on the minting wallet.
+2. Open the mint site and connect the wallet on BSC.
+3. The first tree per wallet is free; further trees cost 0.0013 BNB each.
+4. To merge: hold 9 trees, hold 1,000 $FDG, approve the tree contract and
+   the $FDG spend, then merge. To earn mining rewards: stake the Yggdrasil
+   in the GroveMining contract and claim $FDG.
+
+## Notes
+- No promises of returns. No exchange listing, no venture backing, no price
+  history beyond the thin pool above. The project is new and the token is
+  only tradable in this one small pool.
+- Full agent instructions: skill.md in this repo.
