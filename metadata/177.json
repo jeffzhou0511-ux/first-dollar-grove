@@ -1,0 +1,19 @@
+{
+  "name": "First-Dollar Grove #177",
+  "description": "A Jolly tree from the First-Dollar Grove. First tree per wallet is free; later trees cost 0.0013 BNB. Burn 9 trees + 1,000 $FDG to merge into a Yggdrasil and mine $FDG over 45 days.",
+  "image": "https://jeffzhou0511-ux.github.io/first-dollar-grove/images/grove-bunny-niflheim-N.png",
+  "attributes": [
+    {
+      "trait_type": "Realm",
+      "value": "Niflheim"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "N"
+    },
+    {
+      "trait_type": "Rarity Tier",
+      "value": "Common"
+    }
+  ]
+}
