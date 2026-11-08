@@ -15,6 +15,7 @@ const CONFIG = {
   TREE:    "0x56466afBcC2FDB847ed2cf5Bf78Ec1B213253611", // GroveTree (GROVE)
   YGG:     "0xA95E16997dc77FB7dE3F37eF3b200B4B417daA5D", // GroveYggdrasil (FDY)
   MINING:  "0x9DBb6a7944C8C5eE27323b87B9eccAF6c7fFe244", // GroveMining
+  CLAIM:   "0x484a322DCB47250c68fC8f0E7c5482E0B10a73A2", // GroveClaim (open FDG airdrop)
   // Agent ID registry is read from the Tree contract (AGENT_ID_REGISTRY).
   // Mainnet it is the real HandleRegistry (0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F).
 
