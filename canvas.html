@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>画布</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f6f2ec;
+        --surface: #fffdf9;
+        --surface-2: #efe9df;
+        --ink: #211a14;
+        --ink-2: #5c5348;
+        --ink-3: #8a7f70;
+        --line: #ddd3c2;
+        --accent: #b23a26;
+        --accent-ink: #ffffff;
+        --accent-soft: #f7e3dc;
+        --ok: #2e7d46;
+        --ok-soft: #e2efe4;
+        --warn: #9a6a12;
+        --warn-soft: #f6ecd2;
+        --bad: #b02a1e;
+        --bad-soft: #f9e2de;
+        --shadow: 0 1px 2px rgba(33, 26, 20, .06), 0 8px 24px rgba(33, 26, 20, .07);
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #171310;
+          --surface: #221d18;
+          --surface-2: #2b251e;
+          --ink: #f0e9dd;
+          --ink-2: #bdb09c;
+          --ink-3: #8d8070;
+          --line: #3d352b;
+          --accent: #e0654a;
+          --accent-ink: #1d130e;
+          --accent-soft: #3d241c;
+          --ok: #6fc48a;
+          --ok-soft: #1f3125;
+          --warn: #e0b45c;
+          --warn-soft: #38301c;
+          --bad: #ef8a7d;
+          --bad-soft: #3c211c;
+          --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .35);
+          color-scheme: dark;
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      button, input, textarea, select { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 14px 16px 56px; }
+
+      /* ---------- 连接条 ---------- */
+      .connbar {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+        padding: 10px 14px; box-shadow: var(--shadow);
+      }
+      .status-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-weight: 700; font-size: 14px; white-space: nowrap;
+      }
+      .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); flex: none; }
+      .dot.ok { background: var(--ok); }
+      .dot.bad { background: var(--bad); }
+      .dot.busy { background: var(--warn); }
+      .conn-note { color: var(--ink-2); font-size: 13px; flex: 1 1 220px; min-width: 0; }
+      .conn-note:empty { display: none; }
+      .btn {
+        border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+        border-radius: 10px; padding: 8px 16px; font-weight: 700; font-size: 14px;
+      }
+      .btn:hover { border-color: var(--ink-3); }
+      .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+      .btn.primary:hover { filter: brightness(1.07); }
+      .btn.primary:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+      .btn.ghost { background: transparent; }
+      .btn.small { padding: 5px 12px; font-size: 13px; border-radius: 8px; }
+
+      .conn-form {
+        display: none; margin-top: 12px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow);
+      }
+      .conn-form.open { display: block; }
+      .conn-form h2 { font-size: 15px; margin: 0 0 4px; }
+      .conn-form p { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+      .field { margin-bottom: 12px; }
+      .field label { display: block; font-weight: 700; font-size: 13px; margin-bottom: 5px; }
+      .field input {
+        width: 100%; border: 1px solid var(--line); border-radius: 10px;
+        background: var(--bg); padding: 10px 12px; font-size: 14px;
+      }
+      .field .hint { color: var(--ink-3); font-size: 12px; margin-top: 4px; }
+      .key-row { display: flex; gap: 8px; }
+      .key-row input { flex: 1; }
+      .conn-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .test-msg { font-size: 13px; font-weight: 700; }
+      .test-msg.ok { color: var(--ok); }
+      .test-msg.bad { color: var(--bad); }
+
+      /* ---------- 主区域 ---------- */
+      .layout { display: grid; grid-template-columns: 380px 1fr; gap: 18px; margin-top: 18px; align-items: start; }
+      @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+      .panel {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+        padding: 18px; box-shadow: var(--shadow);
+      }
+      @media (min-width: 861px) { .panel { position: sticky; top: 14px; } }
+      .panel h1 {
+        font-family: "Noto Serif SC", "Noto Sans SC", serif;
+        font-size: 24px; font-weight: 900; margin: 0 0 2px; letter-spacing: .02em;
+      }
+      .panel .sub { color: var(--ink-2); font-size: 13px; margin: 0 0 16px; }
+
+      .seg { display: flex; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 16px; }
+      .seg button {
+        flex: 1; border: 0; background: transparent; border-radius: 9px;
+        padding: 9px 0; font-weight: 700; font-size: 15px; color: var(--ink-2);
+      }
+      .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.14); }
+
+      .lbl { display: block; font-weight: 700; font-size: 13px; margin: 14px 0 6px; }
+      .lbl:first-of-type { margin-top: 0; }
+      textarea#prompt {
+        width: 100%; min-height: 110px; resize: vertical;
+        border: 1px solid var(--line); border-radius: 12px; background: var(--bg);
+        padding: 11px 12px; font-size: 15px; line-height: 1.6;
+      }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip {
+        border: 1px solid var(--line); background: var(--bg); border-radius: 999px;
+        padding: 7px 14px; font-size: 14px; font-weight: 500;
+      }
+      .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+      .opt-note { color: var(--ink-3); font-size: 12px; margin-top: 5px; }
+
+      .ref-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+      .ref-item { position: relative; width: 64px; height: 64px; }
+      .ref-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); display: block; }
+      .ref-item .rm {
+        position: absolute; top: -6px; right: -6px; width: 22px; height: 22px;
+        border-radius: 50%; border: 1px solid var(--line); background: var(--surface);
+        font-size: 13px; line-height: 1; padding: 0; font-weight: 700;
+      }
+      .ref-item .ord {
+        position: absolute; left: 4px; bottom: 4px; background: rgba(0,0,0,.62); color: #fff;
+        font-size: 11px; border-radius: 5px; padding: 0 5px; line-height: 1.5;
+      }
+      .ref-add {
+        width: 64px; height: 64px; border: 1.5px dashed var(--ink-3); border-radius: 10px;
+        background: transparent; color: var(--ink-2); font-size: 22px; line-height: 1;
+      }
+      .go {
+        width: 100%; margin-top: 20px; padding: 13px 0; font-size: 16px; border-radius: 12px;
+      }
+      .go-note { text-align: center; color: var(--warn); font-size: 13px; font-weight: 700; margin-top: 10px; }
+      .go-note:empty { display: none; }
+
+      /* ---------- 作品流 ---------- */
+      .feed-head { display: flex; align-items: baseline; gap: 12px; margin: 2px 2px 12px; }
+      .feed-head h2 { font-size: 17px; margin: 0; font-weight: 900; }
+      .feed-head span { color: var(--ink-3); font-size: 13px; }
+      .empty {
+        border: 1.5px dashed var(--line); border-radius: 16px; padding: 44px 20px;
+        text-align: center; color: var(--ink-2); background: var(--surface);
+      }
+      .empty strong { display: block; font-size: 16px; color: var(--ink); margin-bottom: 6px; }
+      .card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+        box-shadow: var(--shadow); overflow: hidden; margin-bottom: 16px;
+      }
+      .card .media { background: var(--surface-2); }
+      .card .media img, .card .media video { width: 100%; display: block; max-height: 70vh; object-fit: contain; background: #000; }
+      .card .media img { background: var(--surface-2); }
+      .card .body { padding: 13px 16px 15px; }
+      .card .prompt-text { font-size: 15px; margin: 0 0 6px; overflow-wrap: anywhere; }
+      .card .meta { color: var(--ink-3); font-size: 12.5px; margin: 0; }
+      .card .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 11px; }
+      .badge {
+        display: inline-block; font-size: 12px; font-weight: 700; border-radius: 999px;
+        padding: 2px 10px; margin-bottom: 8px;
+      }
+      .badge.run { background: var(--warn-soft); color: var(--warn); }
+      .badge.done { background: var(--ok-soft); color: var(--ok); }
+      .badge.fail { background: var(--bad-soft); color: var(--bad); }
+      .progress { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin: 10px 0 4px; }
+      .progress i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .5s ease; }
+      .progress.indet i { width: 38% !important; animation: slide 1.3s ease-in-out infinite alternate; }
+      @keyframes slide { from { margin-left: 0; } to { margin-left: 62%; } }
+      @media (prefers-reduced-motion: reduce) { .progress.indet i { animation: none; } .progress i { transition: none; } }
+      .err-text { color: var(--bad); font-size: 13.5px; overflow-wrap: anywhere; margin: 4px 0 0; white-space: pre-wrap; }
+      .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- 连接状态条 -->
+      <div class="connbar">
+        <span class="status-pill"><span class="dot" id="connDot"></span><span id="connText">未连接桥</span></span>
+        <span class="conn-note" id="connNote">先把桥连上，才能生成图片和视频。</span>
+        <button class="btn" id="toggleConn" type="button">连接设置</button>
+      </div>
+
+      <!-- 连接设置 -->
+      <form class="conn-form" id="connForm">
+        <h2>连接桥</h2>
+        <p>桥（muse2api）跑起来之后会有一个地址和一把密钥，填进来就能用。桥没开着的时候，这里连不上是正常的。地址和密钥只在本次打开期间有效，不会存下来。</p>
+        <div class="field">
+          <label for="baseInput">桥地址</label>
+          <input id="baseInput" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="例如 https://xxxx.trycloudflare.com" />
+          <div class="hint">桥的公开地址，结尾不要带斜杠。</div>
+        </div>
+        <div class="field">
+          <label for="keyInput">密钥</label>
+          <div class="key-row">
+            <input id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="m2a_ 开头的那串" />
+            <button class="btn ghost" id="toggleKey" type="button">显示</button>
+          </div>
+        </div>
+        <div class="conn-actions">
+          <button class="btn primary" id="testConn" type="submit">测试并保存连接</button>
+          <span class="test-msg" id="testMsg" role="status"></span>
+        </div>
+      </form>
+
+      <div class="layout">
+        <!-- 创作面板 -->
+        <section class="panel" aria-label="创作面板">
+          <h1>想画点什么？</h1>
+          <p class="sub">写下描述，桥会调用已登录的 Muse 账号生成。图片一般等 1–3 分钟，视频 2–6 分钟。</p>
+
+          <div class="seg" role="group" aria-label="生成类型">
+            <button type="button" id="modeImage" aria-pressed="true">图片</button>
+            <button type="button" id="modeVideo" aria-pressed="false">视频</button>
+          </div>
+
+          <label class="lbl" for="prompt">描述</label>
+          <textarea id="prompt" placeholder="例如：黄昏的江面上，一个穿黄雨衣的小孩在渔船上收网，电影感画面"></textarea>
+
+          <span class="lbl">参考图（可不传）</span>
+          <div class="ref-grid" id="refGrid">
+            <button class="ref-add" id="refAdd" type="button" aria-label="添加参考图">+</button>
+          </div>
+          <input type="file" id="refFile" accept="image/*" multiple hidden />
+          <div class="opt-note" id="refNote">最多 10 张，每张不超过 40 MB。生成图片时按这些图的内容和风格来画。</div>
+
+          <div id="imageOpts">
+            <span class="lbl">画幅</span>
+            <div class="chips" id="imgSizeChips" role="group" aria-label="图片画幅">
+              <button type="button" class="chip" data-v="1:1">1:1 方图</button>
+              <button type="button" class="chip" data-v="16:9" aria-pressed="true">16:9 横图</button>
+              <button type="button" class="chip" data-v="9:16">9:16 竖图</button>
+              <button type="button" class="chip" data-v="4:3">4:3</button>
+              <button type="button" class="chip" data-v="3:4">3:4</button>
+            </div>
+          </div>
+
+          <div id="videoOpts" hidden>
+            <span class="lbl">画幅</span>
+            <div class="chips" id="vidSizeChips" role="group" aria-label="视频画幅">
+              <button type="button" class="chip" data-v="16:9" aria-pressed="true">16:9 横屏</button>
+              <button type="button" class="chip" data-v="9:16">9:16 竖屏</button>
+            </div>
+            <span class="lbl">时长</span>
+            <div class="chips" id="vidDurChips" role="group" aria-label="视频时长">
+              <button type="button" class="chip" data-v="5" aria-pressed="true">5 秒</button>
+              <button type="button" class="chip" data-v="6">6 秒</button>
+              <button type="button" class="chip" data-v="8">8 秒</button>
+              <button type="button" class="chip" data-v="10">10 秒</button>
+            </div>
+            <div class="opt-note">时长是请求值，实际成片以 Muse 生成的为准。传了参考图时，第一张是视频的第一帧。</div>
+          </div>
+
+          <button class="btn primary go" id="goBtn" type="button">生成图片</button>
+          <div class="go-note" id="goNote"></div>
+        </section>
+
+        <!-- 作品流 -->
+        <section aria-label="作品">
+          <div class="feed-head">
+            <h2>作品</h2>
+            <span id="feedCount"></span>
+          </div>
+          <div id="feed">
+            <div class="empty" id="feedEmpty">
+              <strong>还没有作品</strong>
+              连上桥、写好描述，点生成，第一件作品就会出现在这里。
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="sr" aria-live="polite" id="live"></div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ============ 状态（只在内存里，不落盘） ============ */
+        var conn = { base: "", key: "", ok: false };
+        var mode = "image"; // image | video
+        var imgSize = "16:9", vidSize = "16:9", vidDur = 5;
+        var refs = []; // {dataUrl, name}
+        var tasks = []; // 任务卡片，新的在前
+        var seq = 0;
+
+        var $ = function (id) { return document.getElementById(id); };
+        var els = {
+          dot: $("connDot"), connText: $("connText"), connNote: $("connNote"),
+          toggleConn: $("toggleConn"), connForm: $("connForm"),
+          base: $("baseInput"), key: $("keyInput"), toggleKey: $("toggleKey"),
+          testMsg: $("testMsg"), prompt: $("prompt"),
+          modeImage: $("modeImage"), modeVideo: $("modeVideo"),
+          imageOpts: $("imageOpts"), videoOpts: $("videoOpts"),
+          refGrid: $("refGrid"), refAdd: $("refAdd"), refFile: $("refFile"), refNote: $("refNote"),
+          go: $("goBtn"), goNote: $("goNote"),
+          feed: $("feed"), feedEmpty: $("feedEmpty"), feedCount: $("feedCount"),
+          live: $("live")
+        };
+
+        function uuid() {
+          if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+          return "k" + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+        }
+        function announce(msg) { els.live.textContent = msg; }
+        function nowTime() {
+          var d = new Date();
+          function p(n) { return (n < 10 ? "0" : "") + n; }
+          return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+        }
+        function normBase(s) { return (s || "").trim().replace(/\/+$/, ""); }
+
+        /* 媒体地址：桥返回的可能是相对路径，也可能带着桥自己的内网地址；
+           只要路径是 /v1/media/...，就统一拼到当前填的桥地址上。 */
+        function mediaUrl(raw) {
+          if (!raw) return "";
+          var i = raw.indexOf("/v1/media/");
+          if (i >= 0) return conn.base + raw.slice(i);
+          if (/^https?:\/\//i.test(raw)) return raw;
+          return conn.base + (raw.charAt(0) === "/" ? raw : "/" + raw);
+        }
+
+        function api(path, opts) {
+          opts = opts || {};
+          var headers = { "Authorization": "Bearer " + conn.key };
+          if (opts.body) headers["Content-Type"] = "application/json";
+          if (opts.idem) headers["Idempotency-Key"] = opts.idem;
+          return fetch(conn.base + path, {
+            method: opts.method || "GET",
+            headers: headers,
+            body: opts.body ? JSON.stringify(opts.body) : undefined
+          });
+        }
+        function errText(res, data) {
+          if (data && typeof data.detail === "string") return data.detail;
+          if (data && data.error) return typeof data.error === "string" ? data.error : JSON.stringify(data.error);
+          if (data && data.detail) return JSON.stringify(data.detail);
+          return "桥返回了 HTTP " + res.status;
+        }
+
+        /* ============ 连接 ============ */
+        function setConnUi(state, note) {
+          els.dot.className = "dot" + (state === "ok" ? " ok" : state === "bad" ? " bad" : state === "busy" ? " busy" : "");
+          els.connText.textContent =
+            state === "ok" ? "已连接桥" :
+            state === "bad" ? "连接有问题" :
+            state === "busy" ? "正在连接…" : "未连接桥";
+          els.connNote.textContent = note || "";
+          refreshGo();
+        }
+        function testConnection(showMsg) {
+          var base = normBase(els.base.value), key = els.key.value.trim();
+          if (!base || !key) {
+            if (showMsg) { els.testMsg.className = "test-msg bad"; els.testMsg.textContent = "桥地址和密钥都要填。"; }
+            return Promise.resolve(false);
+          }
+          conn.base = base; conn.key = key;
+          setConnUi("busy", "正在试连 " + base + " …");
+          if (showMsg) { els.testMsg.className = "test-msg"; els.testMsg.textContent = "正在试连…"; }
+          // 用一个不存在的任务 id 探活：401 = 密钥不对，404 = 桥通了而且密钥对。
+          return api("/v1/images/tasks/__probe__").then(function (res) {
+            if (res.status === 404) {
+              conn.ok = true;
+              setConnUi("ok", "桥地址：" + base);
+              if (showMsg) { els.testMsg.className = "test-msg ok"; els.testMsg.textContent = "连上了，可以开始生成。"; }
+              return true;
+            }
+            conn.ok = false;
+            if (res.status === 401 || res.status === 403) {
+              setConnUi("bad", "桥能连上，但密钥不对，检查一下密钥再试。");
+              if (showMsg) { els.testMsg.className = "test-msg bad"; els.testMsg.textContent = "密钥不对（HTTP " + res.status + "）。"; }
+            } else {
+              setConnUi("bad", "桥回了 HTTP " + res.status + "，地址可能不对。");
+              if (showMsg) { els.testMsg.className = "test-msg bad"; els.testMsg.textContent = "桥回了 HTTP " + res.status + "。"; }
+            }
+            return false;
+          }).catch(function () {
+            conn.ok = false;
+            setConnUi("bad", "连不上这个地址。桥没开、地址写错、或者桥那边的通道断了，都会这样。");
+            if (showMsg) { els.testMsg.className = "test-msg bad"; els.testMsg.textContent = "连不上，检查桥是不是开着。"; }
+            return false;
+          });
+        }
+        els.toggleConn.addEventListener("click", function () {
+          els.connForm.classList.toggle("open");
+          if (els.connForm.classList.contains("open")) els.base.focus();
+        });
+        els.toggleKey.addEventListener("click", function () {
+          var show = els.key.type === "password";
+          els.key.type = show ? "text" : "password";
+          els.toggleKey.textContent = show ? "隐藏" : "显示";
+        });
+        els.connForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          testConnection(true).then(function (ok) { if (ok) els.connForm.classList.remove("open"); });
+        });
+
+        /* 打开页面时，如果链接里带了桥地址（br）和密钥（k），直接连上。
+           读完就把参数从地址里抹掉，密钥不留在地址栏。 */
+        (function initFromUrl() {
+          try {
+            var q = new URLSearchParams(window.location.search);
+            var br = q.get("br"), k = q.get("k");
+            if (br) els.base.value = normBase(br);
+            if (k) els.key.value = k;
+            if (br || k) {
+              try {
+                var clean = window.location.pathname + window.location.hash;
+                window.history.replaceState(null, "", clean);
+              } catch (e) { /* 沙箱里改不了也没关系 */ }
+            }
+            if (br && k) testConnection(false);
+            else if (br || k) els.connForm.classList.add("open");
+          } catch (e) { /* 没有参数就等手动填 */ }
+        })();
+
+        /* ============ 模式与选项 ============ */
+        function setMode(m) {
+          mode = m;
+          els.modeImage.setAttribute("aria-pressed", m === "image" ? "true" : "false");
+          els.modeVideo.setAttribute("aria-pressed", m === "video" ? "true" : "false");
+          els.imageOpts.hidden = m !== "image";
+          els.videoOpts.hidden = m !== "video";
+          els.refNote.textContent = m === "image"
+            ? "最多 10 张，每张不超过 40 MB。生成图片时按这些图的内容和风格来画。"
+            : "最多 10 张。第一张图会当作视频的第一帧，其余的作内容和风格参考。";
+          refreshGo();
+        }
+        els.modeImage.addEventListener("click", function () { setMode("image"); });
+        els.modeVideo.addEventListener("click", function () { setMode("video"); });
+
+        function wireChips(container, cb) {
+          container.addEventListener("click", function (e) {
+            var b = e.target.closest(".chip");
+            if (!b) return;
+            var all = container.querySelectorAll(".chip");
+            for (var i = 0; i < all.length; i++) all[i].removeAttribute("aria-pressed");
+            b.setAttribute("aria-pressed", "true");
+            cb(b.getAttribute("data-v"));
+          });
+        }
+        wireChips($("imgSizeChips"), function (v) { imgSize = v; });
+        wireChips($("vidSizeChips"), function (v) { vidSize = v; });
+        wireChips($("vidDurChips"), function (v) { vidDur = parseInt(v, 10); });
+
+        function refreshGo() {
+          els.go.textContent = mode === "image" ? "生成图片" : "生成视频";
+          var busy = tasks.some(function (t) { return t.state === "posting"; });
+          els.go.disabled = busy;
+          if (!conn.ok) els.goNote.textContent = "还没连上桥：先在上面「连接设置」里填桥地址和密钥。";
+          else if (!els.prompt.value.trim()) els.goNote.textContent = "";
+          else els.goNote.textContent = "";
+          if (!conn.ok) { /* 保持提示 */ } else { els.goNote.textContent = ""; }
+        }
+        els.prompt.addEventListener("input", refreshGo);
+
+        /* ============ 参考图 ============ */
+        function renderRefs() {
+          var items = els.refGrid.querySelectorAll(".ref-item");
+          items.forEach(function (n) { n.remove(); });
+          refs.forEach(function (r, i) {
+            var d = document.createElement("div");
+            d.className = "ref-item";
+            var img = document.createElement("img");
+            img.src = r.dataUrl; img.alt = "参考图 " + (i + 1);
+            var ord = document.createElement("span");
+            ord.className = "ord"; ord.textContent = String(i + 1);
+            var rm = document.createElement("button");
+            rm.className = "rm"; rm.type = "button"; rm.textContent = "×";
+            rm.setAttribute("aria-label", "去掉参考图 " + (i + 1));
+            rm.addEventListener("click", function () { refs.splice(i, 1); renderRefs(); });
+            d.appendChild(img); d.appendChild(ord); d.appendChild(rm);
+            els.refGrid.insertBefore(d, els.refAdd);
+          });
+          els.refAdd.style.display = refs.length >= 10 ? "none" : "";
+        }
+        els.refAdd.addEventListener("click", function () { els.refFile.click(); });
+        els.refFile.addEventListener("change", function () {
+          var files = Array.prototype.slice.call(els.refFile.files || []);
+          els.refFile.value = "";
+          files.forEach(function (f) {
+            if (refs.length >= 10) return;
+            if (f.size > 40 * 1024 * 1024) { announce("有一张图超过 40 MB，没加上：" + f.name); return; }
+            var rd = new FileReader();
+            rd.onload = function () {
+              refs.push({ dataUrl: String(rd.result), name: f.name });
+              renderRefs();
+            };
+            rd.readAsDataURL(f);
+          });
+        });
+
+        /* ============ 任务卡片 ============ */
+        function addCard(t) {
+          els.feedEmpty.style.display = "none";
+          var card = document.createElement("article");
+          card.className = "card";
+          var media = document.createElement("div");
+          media.className = "media"; media.hidden = true;
+          var body = document.createElement("div");
+          body.className = "body";
+          var badge = document.createElement("span");
+          badge.className = "badge run";
+          badge.textContent = t.kind === "image" ? "图片 · 排队中" : "视频 · 排队中";
+          var p = document.createElement("p");
+          p.className = "prompt-text"; p.textContent = t.prompt;
+          var prog = document.createElement("div");
+          prog.className = "progress indet";
+          var bar = document.createElement("i");
+          bar.style.width = "0%";
+          prog.appendChild(bar);
+          var meta = document.createElement("p");
+          meta.className = "meta"; meta.textContent = t.metaText + " · " + t.startedAt + " 提交";
+          var err = document.createElement("p");
+          err.className = "err-text"; err.hidden = true;
+          var actions = document.createElement("div");
+          actions.className = "actions";
+          var stopBtn = document.createElement("button");
+          stopBtn.className = "btn small"; stopBtn.type = "button"; stopBtn.textContent = "停止等待";
+          stopBtn.addEventListener("click", function () { stopTask(t, "已停止等待。桥那边可能还在生成，这件作品不会回到这里了。"); });
+          actions.appendChild(stopBtn);
+          body.appendChild(badge); body.appendChild(p); body.appendChild(prog);
+          body.appendChild(meta); body.appendChild(err); body.appendChild(actions);
+          card.appendChild(media); card.appendChild(body);
+          els.feed.insertBefore(card, els.feed.firstChild);
+          t.els = { card: card, media: media, badge: badge, prog: prog, bar: bar, meta: meta, err: err, actions: actions, stopBtn: stopBtn };
+          updateCount();
+        }
+        function updateCount() {
+          var done = tasks.filter(function (t) { return t.state === "done"; }).length;
+          els.feedCount.textContent = tasks.length ? ("共 " + tasks.length + " 件，已完成 " + done + " 件") : "";
+        }
+        function setRunning(t, statusText, progress) {
+          t.els.badge.className = "badge run";
+          t.els.badge.textContent = (t.kind === "image" ? "图片" : "视频") + " · " + statusText;
+          if (typeof progress === "number" && progress > 0) {
+            t.els.prog.classList.remove("indet");
+            t.els.bar.style.width = Math.min(100, progress) + "%";
+          }
+        }
+        function finishCard(t, url) {
+          t.state = "done"; t.url = url;
+          t.els.prog.hidden = true;
+          t.els.stopBtn.remove();
+          t.els.badge.className = "badge done";
+          t.els.badge.textContent = (t.kind === "image" ? "图片" : "视频") + " · 已完成";
+          var secs = Math.round((Date.now() - t.t0) / 1000);
+          t.els.meta.textContent = t.metaText + " · " + t.startedAt + " 提交 · 用时约 " + secs + " 秒";
+          t.els.media.hidden = false;
+          if (t.kind === "image") {
+            var img = document.createElement("img");
+            img.src = url; img.alt = t.prompt; img.loading = "lazy";
+            t.els.media.appendChild(img);
+          } else {
+            var v = document.createElement("video");
+            v.src = url; v.controls = true; v.playsInline = true; v.preload = "metadata";
+            t.els.media.appendChild(v);
+          }
+          var dl = document.createElement("a");
+          dl.className = "btn small"; dl.textContent = "下载";
+          dl.href = url; dl.target = "_blank"; dl.rel = "noopener";
+          dl.setAttribute("download", "");
+          t.els.actions.appendChild(dl);
+          if (t.kind === "image") {
+            var use = document.createElement("button");
+            use.className = "btn small"; use.type = "button"; use.textContent = "用作参考图";
+            use.addEventListener("click", function () {
+              if (refs.length >= 10) { announce("参考图已经满 10 张了。"); return; }
+              refs.push({ dataUrl: url, name: "作品" });
+              renderRefs();
+              announce("已把这张图加到参考图里。");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+            t.els.actions.appendChild(use);
+          }
+          var open = document.createElement("a");
+          open.className = "btn small ghost"; open.textContent = "打开原文件";
+          open.href = url; open.target = "_blank"; open.rel = "noopener";
+          t.els.actions.appendChild(open);
+          announce((t.kind === "image" ? "图片" : "视频") + "生成完成：" + t.prompt);
+          updateCount();
+          refreshGo();
+        }
+        function failCard(t, msg) {
+          t.state = "failed";
+          t.els.prog.hidden = true;
+          t.els.stopBtn.remove();
+          t.els.badge.className = "badge fail";
+          t.els.badge.textContent = (t.kind === "image" ? "图片" : "视频") + " · 没生成出来";
+          t.els.err.hidden = false;
+          t.els.err.textContent = msg;
+          announce("生成失败：" + msg);
+          updateCount();
+          refreshGo();
+        }
+        function stopTask(t, msg) {
+          if (t.timer) { clearTimeout(t.timer); t.timer = null; }
+          if (t.state === "running" || t.state === "posting") {
+            t.state = "stopped";
+            t.els.prog.hidden = true;
+            t.els.stopBtn.remove();
+            t.els.badge.className = "badge fail";
+            t.els.badge.textContent = (t.kind === "image" ? "图片" : "视频") + " · 已停止等待";
+            t.els.err.hidden = false;
+            t.els.err.textContent = msg;
+            updateCount();
+            refreshGo();
+          }
+        }
+
+        /* ============ 轮询 ============ */
+        function pollImage(t) {
+          if (t.state !== "running") return;
+          api("/v1/images/tasks/" + encodeURIComponent(t.id)).then(function (res) {
+            return res.json().then(function (data) { return { res: res, data: data }; }).catch(function () { return { res: res, data: null }; });
+          }).then(function (r) {
+            if (t.state !== "running") return;
+            if (r.res.status === 401) { failCard(t, "密钥被桥拒绝了（HTTP 401），回连接设置检查密钥。"); return; }
+            if (!r.res.ok && r.res.status !== 404) { schedulePoll(t); return; }
+            var d = r.data || {};
+            if (d.status === "completed") {
+              var url = (d.data && d.data[0] && d.data[0].url) || d.url || (d.result && d.result.url) || "";
+              if (url) finishCard(t, mediaUrl(url));
+              else failCard(t, "桥说生成完了，但没给文件地址。");
+            } else if (d.status === "failed") {
+              failCard(t, d.error || "桥那边生成失败，没说原因。");
+            } else {
+              setRunning(t, d.status === "processing" ? "生成中" : "排队中", d.progress);
+              schedulePoll(t);
+            }
+          }).catch(function () { if (t.state === "running") schedulePoll(t); });
+        }
+        function pollVideo(t) {
+          if (t.state !== "running") return;
+          api("/v1/videos/" + encodeURIComponent(t.id)).then(function (res) {
+            return res.json().then(function (data) { return { res: res, data: data }; }).catch(function () { return { res: res, data: null }; });
+          }).then(function (r) {
+            if (t.state !== "running") return;
+            if (r.res.status === 401) { failCard(t, "密钥被桥拒绝了（HTTP 401），回连接设置检查密钥。"); return; }
+            if (!r.res.ok && r.res.status !== 404) { schedulePoll(t); return; }
+            var d = r.data || {};
+            var st = d.status;
+            if (st === "completed" || st === "succeeded" || st === "success" || st === "done") {
+              var url = d.url || (d.result && d.result.url) || (d.video && d.video.url) || "";
+              if (url) finishCard(t, mediaUrl(url));
+              else failCard(t, "桥说生成完了，但没给文件地址。");
+            } else if (st === "failed" || st === "error") {
+              failCard(t, d.error || "桥那边生成失败，没说原因。");
+            } else {
+              setRunning(t, st === "processing" ? "生成中" : "排队中", d.progress);
+              schedulePoll(t);
+            }
+          }).catch(function () { if (t.state === "running") schedulePoll(t); });
+        }
+        function schedulePoll(t) {
+          var wait = t.kind === "image" ? 3000 : 4000;
+          // 安全网：等太久就停下来，告诉用户桥可能卡住了（桥自己也有超时，会先报失败）。
+          if (Date.now() - t.t0 > (t.kind === "image" ? 15 : 18) * 60 * 1000) {
+            failCard(t, "等了太久桥都没给结果，这次先停了。可以稍后再试，或者先确认桥还开着。");
+            return;
+          }
+          t.timer = setTimeout(function () { t.kind === "image" ? pollImage(t) : pollVideo(t); }, wait);
+        }
+
+        /* ============ 提交 ============ */
+        function submit() {
+          var prompt = els.prompt.value.trim();
+          if (!conn.ok) {
+            els.connForm.classList.add("open");
+            els.connNote.textContent = "先把桥连上：填桥地址和密钥，点「测试并保存连接」。";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+          }
+          if (!prompt) { els.prompt.focus(); els.goNote.textContent = "先写一句描述再生成。"; return; }
+          els.goNote.textContent = "";
+          var kind = mode;
+          var t = {
+            n: ++seq, kind: kind, prompt: prompt, state: "posting",
+            id: null, idem: uuid(), t0: Date.now(), startedAt: nowTime(), timer: null,
+            metaText: kind === "image"
+              ? "图片 · 画幅 " + imgSize + (refs.length ? " · 参考图 " + refs.length + " 张" : "")
+              : "视频 · " + vidSize + " · 请求 " + vidDur + " 秒" + (refs.length ? " · 参考图 " + refs.length + " 张" : "")
+          };
+          tasks.unshift(t);
+          addCard(t);
+          setRunning(t, "正在提交", 0);
+          refreshGo();
+          announce("已提交" + (kind === "image" ? "图片" : "视频") + "任务：" + prompt);
+
+          var refPayload = refs.length ? refs.map(function (r) { return r.dataUrl; }) : null;
+          var path, body;
+          if (kind === "image") {
+            path = "/v1/images/tasks";
+            body = { model: "muse-image", prompt: prompt, size: imgSize, response_format: "url", timeout: 600 };
+          } else {
+            path = "/v1/videos";
+            body = { prompt: prompt, duration: vidDur, size: vidSize, timeout: 600 };
+          }
+          if (refPayload) body.images = refPayload;
+
+          api(path, { method: "POST", body: body, idem: t.idem }).then(function (res) {
+            return res.json().then(function (data) { return { res: res, data: data }; }).catch(function () { return { res: res, data: null }; });
+          }).then(function (r) {
+            if (t.state !== "posting") return;
+            refreshGo();
+            if ((r.res.status === 200 || r.res.status === 201 || r.res.status === 202) && r.data && r.data.id) {
+              t.id = r.data.id; t.state = "running";
+              setRunning(t, "排队中", r.data.progress);
+              refreshGo();
+              schedulePoll(t);
+            } else if (r.res.status === 401) {
+              failCard(t, "密钥被桥拒绝了（HTTP 401），回连接设置检查密钥。");
+            } else if (r.res.status === 429) {
+              failCard(t, "桥那边的队列满了（HTTP 429），等一两分钟再试。" + (r.data ? " " + errText(r.res, r.data) : ""));
+            } else {
+              failCard(t, errText(r.res, r.data));
+            }
+          }).catch(function () {
+            if (t.state !== "posting") return;
+            refreshGo();
+            // 提交本身没送达：给一个重试按钮，用同一个幂等键，不会重复生成、重复扣额度。
+            t.state = "running"; // 借用 running 只是为了让卡片保持活动态，下面单独处理
+            t.state = "postfailed";
+            t.els.prog.hidden = true;
+            t.els.stopBtn.remove();
+            t.els.badge.className = "badge fail";
+            t.els.badge.textContent = (kind === "image" ? "图片" : "视频") + " · 没提交上去";
+            t.els.err.hidden = false;
+            t.els.err.textContent = "请求没送到桥那里（多半是桥关了或通道断了）。桥恢复后点重试，不会重复扣额度。";
+            var retry = document.createElement("button");
+            retry.className = "btn small"; retry.type = "button"; retry.textContent = "重试提交";
+            retry.addEventListener("click", function () {
+              retry.remove();
+              t.state = "posting"; t.t0 = Date.now();
+              t.els.err.hidden = true; t.els.prog.hidden = false;
+              setRunning(t, "正在重新提交", 0);
+              refreshGo();
+              api(path, { method: "POST", body: body, idem: t.idem }).then(function (res) {
+                return res.json().then(function (data) { return { res: res, data: data }; }).catch(function () { return { res: res, data: null }; });
+              }).then(function (r2) {
+                if (t.state !== "posting") return;
+                if ((r2.res.status === 200 || r2.res.status === 201 || r2.res.status === 202) && r2.data && r2.data.id) {
+                  t.id = r2.data.id; t.state = "running";
+                  setRunning(t, "排队中", r2.data.progress);
+                  refreshGo();
+                  schedulePoll(t);
+                } else {
+                  failCard(t, errText(r2.res, r2.data));
+                }
+              }).catch(function () { failCard(t, "还是没送到桥那里，确认桥开着再试。"); });
+            });
+            t.els.actions.appendChild(retry);
+            updateCount();
+            refreshGo();
+          });
+        }
+        els.go.addEventListener("click", submit);
+
+        setMode("image");
+        renderRefs();
+        refreshGo();
+      })();
+    </script>
+  </body>
+</html>
