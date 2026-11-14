@@ -20,7 +20,7 @@ const CONFIG = {
   // Mainnet it is the real HandleRegistry (0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F).
 
   // --- Pricing / economics (from the plan) ---
-  MINT_FEE_BNB: "0.0013",   // per tree after the first free one (~$0.90)
+  MINT_FEE_BNB: "0.0013",   // per tree after the first free one (~$0.82)
   MERGE_FEE_FDG: "1000",    // FDG burned on every merge
   BOOST_THRESHOLD_FDG: "10000", // FDG staked for the 1.5x boost
   BOOST_MULTIPLIER: "1.5x",
@@ -48,5 +48,5 @@ const CONFIG = {
   // Rarity mint odds (contract): N 70% / R 20% / SR 8% / SSR 2%.
 
   // --- USD reference (APPROXIMATE, fixed for display only) ---
-  BNB_USD: 693,
+  BNB_USD: 631,
 };

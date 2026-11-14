@@ -59,6 +59,21 @@
 
   <div class="banner" id="netBanner">MAINNET — live on BSC Mainnet (chain 56). Minting is open.</div>
 
+  <!-- BATCH 1 · MINER -->
+  <div class="card">
+    <h2>⛏️ Batch 1 — 9 trees = 1 miner</h2>
+    <div class="sub">One miner mines <b>$FDG every day for 38 days</b>. Only 10 new miners in Batch 1 (Yggdrasil #6–#15) — first come, first served, one per wallet.</div>
+    <div class="row"><span class="mut">Price per miner</span><b>$6.56 (8 paid trees, first tree free) + ~$0.15 gas</b></div>
+    <div class="row"><span class="mut">Merge fee</span><b>1,000 $FDG — free from the airdrop</b></div>
+    <div class="row"><span class="mut">Daily output</span><b>First new miner ~3,430,000 FDG/day until 23:20 tonight (tranche 2, 24,000,000 FDG/day total); after 23:20 (tranche 3, 20,000,000/day) ~2,860,000/day, 10th miner ~1,250,000/day</b></div>
+    <div class="row"><span class="mut">38-day total</span><b>~87,000,000 FDG (~$27.44) for the first new miner; ~38,100,000 FDG (~$12.01) for the 10th</b></div>
+    <div class="small" style="margin-top:8px">Daily total is fixed — the more miners join, the less each one gets. Early miners earn more. Numbers are calculated at today's total weight; new miners dilute everyone.</div>
+    <div class="small" style="margin-top:8px"><b>How mined FDG becomes money:</b> sell it back to us every Sunday at <b>2,000,000 FDG = 0.001 BNB (~$0.63)</b>, max 40,000,000 FDG per miner per week. Batch 1 only (Yggdrasil #6–#15), first come first served until the weekly budget runs out.</div>
+    <div class="small" style="margin-top:8px">Mining ends <b>23:20, Dec 22, 2026</b>. The buyback window runs its last settlement Dec 28.</div>
+    <div class="small" style="margin-top:8px">Fees: 80% of every paid mint goes to the <b>liquidity wallet</b> (added to the FDG/BNB pool in 0.01 BNB batches, verifiable on-chain), 20% to the team.</div>
+    <div class="small" style="margin-top:8px">Free claim: Agent ID holders claim 10,000 FDG (1,000 now + 9,000 vesting over 30 days) — exactly the merge fee plus the boost stake.</div>
+  </div>
+
   <!-- 1. CONNECT -->
   <div class="card">
     <h2>1 · Connect wallet</h2>
@@ -102,7 +117,7 @@
   <!-- 2. MINT -->
   <div class="card">
     <h2>2 · Mint a tree</h2>
-    <div class="row"><span class="mut">Price</span><b>0.0013 BNB (~$0.90) per tree</b></div>
+    <div class="row"><span class="mut">Price</span><b>0.0013 BNB (~$0.82) per tree</b></div>
     <div class="row"><span class="mut">First tree per wallet</span><b>FREE (gas only)</b></div>
     <div class="row"><span class="mut">You have minted</span><b id="myMinted">—</b></div>
     <div class="row"><span class="mut">Fee for this mint</span><b id="feeOut">—</b></div>
@@ -114,7 +129,7 @@
       <input type="text" id="referrerIn" placeholder="0x… (optional)">
     </label>
     <button class="btn gold" id="mintBtn" disabled>Mint</button>
-    <div class="small" style="margin-top:8px">Mint fee split: <b>80% to the $FDG/BNB liquidity pool</b>, 20% to the team. Fees are forwarded immediately — the Tree contract holds 0 BNB.</div>
+    <div class="small" style="margin-top:8px">Mint fee split: <b>80% to the liquidity wallet</b> (added to the $FDG/BNB pool in 0.01 BNB batches, verifiable on-chain), 20% to the team. Fees are forwarded immediately — the Tree contract holds 0 BNB.</div>
   </div>
 
   <!-- 3. MY TREES -->

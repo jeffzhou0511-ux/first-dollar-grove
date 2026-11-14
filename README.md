@@ -6,7 +6,7 @@ Single-page static site (no build step). Works from GitHub Pages.
 - `index.html` — the page (ethers v6 via CDN, minimal ABIs embedded, all logic inline).
 - `config.js` — **the only file to change for mainnet.** It holds the 4 contract addresses,
   chain id, RPC URL, tranche schedule, realm/rarity labels, and prices.
-  Currently set to **BSC TESTNET (chain 97)** — labelled TESTNET in the file and on the page.
+  Currently set to **BSC MAINNET (chain 56)** — mainnet contracts, minting live since 2026-11-06.
 - `wiring-test.js` — Node test (needs `ethers@6` in the cwd). Loads CONFIG + ABIS from the
   built files and runs the page's read-only calls against the configured RPC.
   Run: `npm install ethers@6.13.0 --no-save && node wiring-test.js` (42 checks, all must pass).
